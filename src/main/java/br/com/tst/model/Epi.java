@@ -10,35 +10,40 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "produtos")
+@Table(name = "epis")
 public class Epi {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @NotBlank(message = "Informe o CA.")
+    @Size(max = 15, message = "O CA deve possuir no máximo 15 caracteres.")
+    @Column(nullable = false, length = 15)
+    private String ca;
+
+    @NotBlank(message = "Informe o nome do epi.")
+    @Size(max = 600, message = "O nome deve possuir no máximo 600 caracteres.")
+    @Column(nullable = false, length = 600)
     private String nome;
 
-    @Column(length = 255)
-    private String descricao;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal preco;
-
+    @NotNull(message = "Informe o vencimento.")
     @Column(nullable = false)
-    private Integer quantidade;
+    private LocalDate vencimento;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "produto_funcionarios",
-        joinColumns = @JoinColumn(name = "produto_id"),
+        name = "epi_funcionarios",
+        joinColumns = @JoinColumn(name = "epi_id"),
         inverseJoinColumns = @JoinColumn(name = "funcionario_id")
     )
     private List<Funcionario> funcionarios = new ArrayList<>();
@@ -46,12 +51,10 @@ public class Epi {
     public Epi() {
     }
 
-    public Epi(String nome, String descricao, BigDecimal preco,
-               Integer quantidade, List<Funcionario> funcionarios) {
+    public Epi(String ca, String nome, LocalDate vencimento, List<Funcionario> funcionarios) {
+        this.ca = ca;
         this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
-        this.quantidade = quantidade;
+        this.vencimento = vencimento;
         this.funcionarios = funcionarios;
     }
 
@@ -67,32 +70,24 @@ public class Epi {
         return nome;
     }
 
+    public String getCa() {
+        return ca;
+    }
+
+    public void setCa(String ca) {
+        this.ca = ca;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public LocalDate getVencimento() {
+        return vencimento;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
+    public void setVencimento(LocalDate vencimento) {
+        this.vencimento = vencimento;
     }
 
     public List<Funcionario> getFuncionarios() {

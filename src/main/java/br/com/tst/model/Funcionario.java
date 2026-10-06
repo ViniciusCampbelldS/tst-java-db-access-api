@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
@@ -29,13 +30,25 @@ public class Funcionario {
     private Long id;
 
     @NotBlank(message = "Informe o nome da funcionario.")
-    @Size(max = 80, message = "O nome deve possuir no máximo 80 caracteres.")
-    @Column(nullable = false, length = 80)
+    @Size(max = 100, message = "O nome deve possuir no máximo 100 caracteres.")
+    @Column(nullable = false, length = 100)
     private String nome;
 
-    @Size(max = 255, message = "A descrição deve possuir no máximo 255 caracteres.")
-    @Column(length = 255)
-    private String descricao;
+    @Size(max = 40, message = "O cargo deve possuir no máximo 40 caracteres.")
+    @Column(length = 40)
+    private String cargo;
+
+    @NotBlank(message = "Informe o CPF.")
+    @Pattern(
+        regexp = "^(?:\\D*\\d){11}\\D*$",
+        message = "O CPF deve possuir exatamente 11 números."
+    )
+    @Column(nullable = false, length = 11)
+    private String cpf;
+
+    @Size(max = 40, message = "O setor deve possuir no máximo 40 caracteres.")
+    @Column(length = 40)
+    private String setor;
 
     @ManyToMany(mappedBy = "funcionarios")
     private List<Epi> epis = new ArrayList<>();
@@ -43,9 +56,11 @@ public class Funcionario {
     public Funcionario() {
     }
 
-    public Funcionario(String nome, String descricao) {
+    public Funcionario(String nome, String cargo, String cpf, String setor) {
         this.nome = nome;
-        this.descricao = descricao;
+        this.cargo = cargo;
+        this.cpf = cpf;
+        this.setor = setor;
     }
 
     public Long getId() {
@@ -64,12 +79,28 @@ public class Funcionario {
         this.nome = nome;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getCargo() {
+        return cargo;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getSetor() {
+        return setor;
+    }
+
+    public void setSetor(String setor) {
+        this.setor = setor;
     }
 
     public List<Epi> getEpis() {

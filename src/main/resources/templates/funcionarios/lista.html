@@ -30,7 +30,9 @@
                 <tr>
                     <th>Código</th>
                     <th>Nome</th>
-                    <th>Descrição</th>
+                    <th>CPF</th>
+                    <th>Cargo</th>
+                    <th>Setor</th>
                     <th class="text-end">Ações</th>
                 </tr>
                 </thead>
@@ -38,7 +40,9 @@
                 <tr th:each="funcionario : ${funcionarios}">
                     <td th:text="${funcionario.id}"></td>
                     <td class="fw-semibold" th:text="${funcionario.nome}"></td>
-                    <td th:text="${funcionario.descricao ?: '-'}"></td>
+                    <td th:text="${funcionario.cpf}"></td>
+                    <td th:text="${funcionario.cargo ?: '-'}"></td>
+                    <td th:text="${funcionario.setor ?: '-'}"></td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-outline-warning btn-sm"
                            th:href="@{/funcionarios/editar/{id}(id=${funcionario.id})}">
@@ -55,7 +59,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(funcionarios)}">
-                    <td colspan="4" class="text-center py-5 text-secondary">
+                    <td colspan="6" class="text-center py-5 text-secondary">
                         Nenhuma funcionario cadastrada.
                     </td>
                 </tr>

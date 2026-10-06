@@ -5,13 +5,17 @@ import br.com.tst.model.Funcionario;
 public record FuncionarioResponse(
     Long id,
     String nome,
-    String descricao
+    String cargo,
+    String cpf,
+    String setor
 ){
     public static FuncionarioResponse from(Funcionario funcionario){
         return new FuncionarioResponse(
           funcionario.getId(),
           funcionario.getNome(),
-          funcionario.getDescricao()
+          funcionario.getCargo(),
+          funcionario.getCpf(),
+          funcionario.getSetor()
         );
     }
 

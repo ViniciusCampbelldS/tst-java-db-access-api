@@ -29,9 +29,9 @@
                 <thead class="table-light">
                 <tr>
                     <th>Código</th>
+                    <th>CA</th>
                     <th>Nome</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
+                    <th>Vencimento</th>
                     <th>Funcionarios</th>
                     <th class="text-end">Ações</th>
                 </tr>
@@ -39,14 +39,9 @@
                 <tbody>
                 <tr th:each="epi : ${epis}">
                     <td th:text="${epi.id}"></td>
-                    <td>
-                        <strong th:text="${epi.nome}"></strong>
-                        <small class="d-block text-secondary"
-                               th:if="${epi.descricao != null and !epi.descricao.isBlank()}"
-                               th:text="${epi.descricao}"></small>
-                    </td>
-                    <td th:text="${#numbers.formatCurrency(epi.preco)}"></td>
-                    <td th:text="${epi.quantidade}"></td>
+                    <td th:text="${epi.ca}"></td>
+                    <td class="fw-semibold" th:text="${epi.nome}"></td>
+                    <td th:text="${#temporals.format(epi.vencimento, 'dd/MM/yyyy')}"></td>
                     <td>
                         <span th:each="funcionario, status : ${epi.funcionarios}"
                               th:text="${funcionario.nome + (status.last ? '' : ', ')}"></span>

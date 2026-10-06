@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
@@ -70,10 +71,9 @@ public class EpiApiController {
     private EpiForm converterParaForm (Long id, EpiRequest epiRequest){
         EpiForm form = new EpiForm();
         form.setId(id);
+        form.setCa(epiRequest.ca());
         form.setNome(epiRequest.nome());
-        form.setDescricao(epiRequest.descricao());
-        form.setPreco(epiRequest.preco());
-        form.setQuantidade(epiRequest.quantidade());
+        form.setVencimento(epiRequest.vencimento().atZone(ZoneOffset.UTC).toLocalDate());
         form.setFuncionarioIds(epiRequest.funcionarioIds());
         return form;
     }

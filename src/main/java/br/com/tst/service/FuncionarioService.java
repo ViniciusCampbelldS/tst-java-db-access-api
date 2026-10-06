@@ -36,6 +36,7 @@ public class FuncionarioService {
     @Transactional
     public Funcionario salvar(Funcionario funcionario) {
         funcionario.setNome(funcionario.getNome().trim());
+        funcionario.setCpf(funcionario.getCpf().replaceAll("\\D", ""));
 
         funcionarioRepository.findByNomeIgnoreCase(funcionario.getNome())
             .filter(encontrada -> !encontrada.getId().equals(funcionario.getId()))

@@ -57,8 +57,8 @@ public class FuncionarioController {
             redirectAttributes.addFlashAttribute(
                 "sucesso",
                 nova
-                    ? "Funcionario cadastrada com sucesso."
-                    : "Funcionario atualizada com sucesso."
+                    ? "Funcionario cadastrado com sucesso."
+                    : "Funcionario atualizado com sucesso."
             );
             return "redirect:/funcionarios";
         } catch (IllegalArgumentException exception) {

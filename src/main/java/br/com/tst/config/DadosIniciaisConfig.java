@@ -14,12 +14,16 @@ public class DadosIniciaisConfig {
         return args -> {
             if (repository.count() == 0) {
                 repository.save(new Funcionario(
-                    "Informática",
-                    "Computadores, acessórios e periféricos"
+                    "Funcionário de exemplo",
+                    "Operador",
+                    "12345678911",
+                    "Forno"
                 ));
                 repository.save(new Funcionario(
-                    "Escritório",
-                    "Materiais e equipamentos de escritório"
+                    "Funcionário administrativo",
+                    "Assistente",
+                    "11122233344",
+                    "Administrativo"
                 ));
             }
         };

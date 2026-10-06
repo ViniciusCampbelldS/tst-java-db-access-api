@@ -46,10 +46,9 @@ public class EpiService {
             ? new Epi()
             : buscar(form.getId());
 
+        epi.setCa(form.getCa().trim());
         epi.setNome(form.getNome().trim());
-        epi.setDescricao(form.getDescricao());
-        epi.setPreco(form.getPreco());
-        epi.setQuantidade(form.getQuantidade());
+        epi.setVencimento(form.getVencimento());
         epi.setFuncionarios(funcionarios);
 
         return epiRepository.save(epi);

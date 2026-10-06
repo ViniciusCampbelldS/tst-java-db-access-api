@@ -25,37 +25,27 @@
                         <input type="hidden" th:field="*{id}">
 
                         <div class="mb-3">
+                            <label class="form-label" for="ca">CA</label>
+                            <input id="ca" class="form-control"
+                                   th:classappend="${#fields.hasErrors('ca')} ? 'is-invalid'"
+                                   type="text" th:field="*{ca}" maxlength="15">
+                            <div class="invalid-feedback" th:errors="*{ca}"></div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label" for="nome">Nome</label>
                             <input id="nome" class="form-control"
                                    th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
-                                   type="text" th:field="*{nome}" maxlength="100" autofocus>
+                                   type="text" th:field="*{nome}" maxlength="600" autofocus>
                             <div class="invalid-feedback" th:errors="*{nome}"></div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="descricao">Descrição</label>
-                            <textarea id="descricao" class="form-control" rows="3"
-                                      th:classappend="${#fields.hasErrors('descricao')} ? 'is-invalid'"
-                                      th:field="*{descricao}" maxlength="255"></textarea>
-                            <div class="invalid-feedback" th:errors="*{descricao}"></div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="preco">Preço</label>
-                                <input id="preco" class="form-control"
-                                       th:classappend="${#fields.hasErrors('preco')} ? 'is-invalid'"
-                                       type="number" step="0.01" min="0.01" th:field="*{preco}">
-                                <div class="invalid-feedback" th:errors="*{preco}"></div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="quantidade">Quantidade</label>
-                                <input id="quantidade" class="form-control"
-                                       th:classappend="${#fields.hasErrors('quantidade')} ? 'is-invalid'"
-                                       type="number" min="0" th:field="*{quantidade}">
-                                <div class="invalid-feedback" th:errors="*{quantidade}"></div>
-                            </div>
+                            <label class="form-label" for="vencimento">Vencimento</label>
+                            <input id="vencimento" class="form-control"
+                                   th:classappend="${#fields.hasErrors('vencimento')} ? 'is-invalid'"
+                                   type="date" th:field="*{vencimento}">
+                            <div class="invalid-feedback" th:errors="*{vencimento}"></div>
                         </div>
 
                         <div class="mb-4">

@@ -44,7 +44,7 @@ public class FuncionarioApiController {
     public ResponseEntity<FuncionarioResponse> cadastrar(
             @Valid @RequestBody FuncionarioRequest request) {
         Funcionario funcionario = funcionarioService.salvar(
-            new Funcionario(request.nome(), request.descricao())
+            new Funcionario(request.nome(), request.cargo(), request.cpf(), request.setor())
         );
         FuncionarioResponse response = FuncionarioResponse.from(funcionario);
         return ResponseEntity
@@ -58,7 +58,9 @@ public class FuncionarioApiController {
             @Valid @RequestBody FuncionarioRequest request) {
         Funcionario funcionario = funcionarioService.buscar(id);
         funcionario.setNome(request.nome());
-        funcionario.setDescricao(request.descricao());
+        funcionario.setCargo(request.cargo());
+        funcionario.setCpf(request.cpf());
+        funcionario.setSetor(request.setor());
         return FuncionarioResponse.from(funcionarioService.salvar(funcionario));
     }
 

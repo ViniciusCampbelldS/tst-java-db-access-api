@@ -28,16 +28,32 @@
                             <label class="form-label" for="nome">Nome</label>
                             <input id="nome" class="form-control"
                                    th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"
-                                   type="text" th:field="*{nome}" maxlength="80" autofocus>
+                                   type="text" th:field="*{nome}" maxlength="100" autofocus>
                             <div class="invalid-feedback" th:errors="*{nome}"></div>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label" for="cpf">CPF</label>
+                            <input id="cpf" class="form-control"
+                                   th:classappend="${#fields.hasErrors('cpf')} ? 'is-invalid'"
+                                   type="text" th:field="*{cpf}" maxlength="20">
+                            <div class="invalid-feedback" th:errors="*{cpf}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="cargo">Cargo</label>
+                            <input id="cargo" class="form-control"
+                                   th:classappend="${#fields.hasErrors('cargo')} ? 'is-invalid'"
+                                   type="text" th:field="*{cargo}" maxlength="40">
+                            <div class="invalid-feedback" th:errors="*{cargo}"></div>
+                        </div>
+
                         <div class="mb-4">
-                            <label class="form-label" for="descricao">Descrição</label>
-                            <textarea id="descricao" class="form-control" rows="3"
-                                      th:classappend="${#fields.hasErrors('descricao')} ? 'is-invalid'"
-                                      th:field="*{descricao}" maxlength="255"></textarea>
-                            <div class="invalid-feedback" th:errors="*{descricao}"></div>
+                            <label class="form-label" for="setor">Setor</label>
+                            <input id="setor" class="form-control"
+                                   th:classappend="${#fields.hasErrors('setor')} ? 'is-invalid'"
+                                   type="text" th:field="*{setor}" maxlength="40">
+                            <div class="invalid-feedback" th:errors="*{setor}"></div>
                         </div>
 
                         <div class="d-flex gap-2">
