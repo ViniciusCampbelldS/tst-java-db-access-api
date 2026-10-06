@@ -45,7 +45,7 @@ public class FuncionarioApiController {
             @Valid @RequestBody FuncionarioRequest request) {
         Funcionario funcionario =
             new Funcionario(request.nome(), request.cargo(), request.cpf(), request.setor());
-        funcionario.setPermicoes(request.permicoes());
+        funcionario.setPermissoes(request.permicoes());
         funcionario.setStatus(request.status());
         funcionario.setnRs(request.nRs());
         funcionario = funcionarioService.salvar(funcionario);
@@ -64,7 +64,7 @@ public class FuncionarioApiController {
         funcionario.setCargo(request.cargo());
         funcionario.setCpf(request.cpf());
         funcionario.setSetor(request.setor());
-        funcionario.setPermicoes(request.permicoes());
+        funcionario.setPermissoes(request.permicoes());
         funcionario.setStatus(request.status());
         funcionario.setnRs(request.nRs());
         return FuncionarioResponse.from(funcionarioService.salvar(funcionario));

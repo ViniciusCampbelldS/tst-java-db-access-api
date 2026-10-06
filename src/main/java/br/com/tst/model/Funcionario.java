@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "funcionarios")
-@Check(constraints = "status IN ('At', 'Af', 'In') AND permicoes IN ('ADM', 'field', 'tst')")
+@Check(constraints = "status IN ('At', 'Af', 'In') AND permissoes IN ('ADM', 'field', 'tst')")
 public class Funcionario {
 
     @Id
@@ -56,7 +56,7 @@ public class Funcionario {
     @NotBlank(message = "Informe as permissões do(a) funcionario.")
     @Pattern(regexp = "ADM|field|tst", message = "As permissões devem ser ADM, field ou tst.")
     @Column(nullable = false, length = 10)
-    private String permicoes = "field";
+    private String permissoes = "field";
 
     @NotBlank(message = "Informe o status do(a) funcionario.")
     @Pattern(regexp = "At|Af|In", message = "O status deve ser At, Af ou In.")
@@ -127,12 +127,12 @@ public class Funcionario {
         this.setor = setor;
     }
 
-    public String getPermicoes() {
-        return permicoes;
+    public String getPermissoes() {
+        return permissoes;
     }
 
-    public void setPermicoes(String permicoes) {
-        this.permicoes = permicoes;
+    public void setPermissoes(String permissoes) {
+        this.permissoes = permissoes;
     }
 
     public String getStatus() {

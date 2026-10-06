@@ -22,7 +22,7 @@ public record FuncionarioResponse(
           funcionario.getCargo(),
           funcionario.getCpf(),
           funcionario.getSetor(),
-          funcionario.getPermicoes(),
+          funcionario.getPermissoes(),
           funcionario.getStatus(),
           List.copyOf(funcionario.getnRs())
         );
