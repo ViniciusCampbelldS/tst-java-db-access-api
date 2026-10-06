@@ -1,6 +1,0 @@
-FROM openjdk:24-jdk-slim
-WORKDIR /app
-COPY src .
-RUN ./mvnw clean package -DskipTests
-EXPOSE 8080
-CMD ["java", "-jar", "target/*.jar"]
