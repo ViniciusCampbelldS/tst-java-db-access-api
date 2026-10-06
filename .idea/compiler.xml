@@ -9,9 +9,6 @@
         <module name="loja-senac" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="loja-senac" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
