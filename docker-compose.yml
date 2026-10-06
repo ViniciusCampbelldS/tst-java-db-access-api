@@ -4,7 +4,7 @@ services:
     container_name: loja-senac-mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: loja_senac
+      MYSQL_DATABASE: tst_manage
       MYSQL_ROOT_PASSWORD: root
       TZ: America/Sao_Paulo
     ports:
