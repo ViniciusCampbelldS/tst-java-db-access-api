@@ -43,9 +43,12 @@ public class FuncionarioApiController {
     @PostMapping
     public ResponseEntity<FuncionarioResponse> cadastrar(
             @Valid @RequestBody FuncionarioRequest request) {
-        Funcionario funcionario = funcionarioService.salvar(
-            new Funcionario(request.nome(), request.cargo(), request.cpf(), request.setor())
-        );
+        Funcionario funcionario =
+            new Funcionario(request.nome(), request.cargo(), request.cpf(), request.setor());
+        funcionario.setPermicoes(request.permicoes());
+        funcionario.setStatus(request.status());
+        funcionario.setnRs(request.nRs());
+        funcionario = funcionarioService.salvar(funcionario);
         FuncionarioResponse response = FuncionarioResponse.from(funcionario);
         return ResponseEntity
             .created(URI.create("/api/funcionarios/" + funcionario.getId()))
@@ -61,6 +64,9 @@ public class FuncionarioApiController {
         funcionario.setCargo(request.cargo());
         funcionario.setCpf(request.cpf());
         funcionario.setSetor(request.setor());
+        funcionario.setPermicoes(request.permicoes());
+        funcionario.setStatus(request.status());
+        funcionario.setnRs(request.nRs());
         return FuncionarioResponse.from(funcionarioService.salvar(funcionario));
     }
 

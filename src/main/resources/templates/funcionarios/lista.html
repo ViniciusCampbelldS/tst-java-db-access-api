@@ -33,6 +33,9 @@
                     <th>CPF</th>
                     <th>Cargo</th>
                     <th>Setor</th>
+                    <th>Permissões</th>
+                    <th>Status</th>
+                    <th>NRs</th>
                     <th class="text-end">Ações</th>
                 </tr>
                 </thead>
@@ -43,6 +46,9 @@
                     <td th:text="${funcionario.cpf}"></td>
                     <td th:text="${funcionario.cargo ?: '-'}"></td>
                     <td th:text="${funcionario.setor ?: '-'}"></td>
+                    <td th:text="${funcionario.permicoes}"></td>
+                    <td th:text="${funcionario.status}"></td>
+                    <td th:text="${#strings.listJoin(funcionario.nRs, ', ')}"></td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-outline-warning btn-sm"
                            th:href="@{/funcionarios/editar/{id}(id=${funcionario.id})}">
@@ -59,7 +65,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(funcionarios)}">
-                    <td colspan="6" class="text-center py-5 text-secondary">
+                    <td colspan="9" class="text-center py-5 text-secondary">
                         Nenhuma funcionario cadastrada.
                     </td>
                 </tr>

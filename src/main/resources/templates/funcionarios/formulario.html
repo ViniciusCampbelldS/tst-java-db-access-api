@@ -56,6 +56,40 @@
                             <div class="invalid-feedback" th:errors="*{setor}"></div>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label" for="permicoes">Permissões</label>
+                            <select id="permicoes" class="form-select"
+                                    th:classappend="${#fields.hasErrors('permicoes')} ? 'is-invalid'"
+                                    th:field="*{permicoes}">
+                                <option value="ADM">ADM</option>
+                                <option value="field">field</option>
+                                <option value="tst">tst</option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{permicoes}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="status">Status</label>
+                            <select id="status" class="form-select"
+                                    th:classappend="${#fields.hasErrors('status')} ? 'is-invalid'"
+                                    th:field="*{status}">
+                                <option value="At">Ativo (At)</option>
+                                <option value="Af">Afastado (Af)</option>
+                                <option value="In">Inativo (In)</option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{status}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="nRsText">NRs</label>
+                            <input id="nRsText" class="form-control"
+                                   th:classappend="${#fields.hasErrors('nRs')} ? 'is-invalid'"
+                                   type="text" th:field="*{nRsText}"
+                                   placeholder="Ex.: 06, 12, 35">
+                            <div class="form-text">Separe as NRs por vírgula; cada valor pode ter até 15 caracteres.</div>
+                            <div class="invalid-feedback" th:errors="*{nRs}"></div>
+                        </div>
+
                         <div class="d-flex gap-2">
                             <button class="btn btn-success" type="submit">Salvar</button>
                             <a class="btn btn-outline-secondary" th:href="@{/funcionarios}">Cancelar</a>

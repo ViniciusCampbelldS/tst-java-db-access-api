@@ -38,14 +38,6 @@ public class FuncionarioService {
         funcionario.setNome(funcionario.getNome().trim());
         funcionario.setCpf(funcionario.getCpf().replaceAll("\\D", ""));
 
-        funcionarioRepository.findByNomeIgnoreCase(funcionario.getNome())
-            .filter(encontrada -> !encontrada.getId().equals(funcionario.getId()))
-            .ifPresent(encontrada -> {
-                throw new IllegalArgumentException(
-                    "Já existe uma funcionario com esse nome."
-                );
-            });
-
         return funcionarioRepository.save(funcionario);
     }
 
