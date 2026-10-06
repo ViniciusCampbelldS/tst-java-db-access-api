@@ -17,10 +17,10 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
             <h1 class="h3 mb-1">Produtos</h1>
-            <p class="text-secondary mb-0">Gerencie os produtos cadastrados na loja.</p>
+            <p class="text-secondary mb-0">Gerencie os epis cadastrados na loja.</p>
         </div>
 
-        <a class="btn btn-primary" th:href="@{/produtos/novo}">Novo produto</a>
+        <a class="btn btn-primary" th:href="@{/epis/novo}">Novo epi</a>
     </div>
 
     <div class="card border-0 shadow-sm">
@@ -37,38 +37,38 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="produto : ${produtos}">
-                    <td th:text="${produto.id}"></td>
+                <tr th:each="epi : ${epis}">
+                    <td th:text="${epi.id}"></td>
                     <td>
-                        <strong th:text="${produto.nome}"></strong>
+                        <strong th:text="${epi.nome}"></strong>
                         <small class="d-block text-secondary"
-                               th:if="${produto.descricao != null and !produto.descricao.isBlank()}"
-                               th:text="${produto.descricao}"></small>
+                               th:if="${epi.descricao != null and !epi.descricao.isBlank()}"
+                               th:text="${epi.descricao}"></small>
                     </td>
-                    <td th:text="${#numbers.formatCurrency(produto.preco)}"></td>
-                    <td th:text="${produto.quantidade}"></td>
+                    <td th:text="${#numbers.formatCurrency(epi.preco)}"></td>
+                    <td th:text="${epi.quantidade}"></td>
                     <td>
-                        <span th:each="categoria, status : ${produto.categorias}"
+                        <span th:each="categoria, status : ${epi.categorias}"
                               th:text="${categoria.nome + (status.last ? '' : ', ')}"></span>
                     </td>
                     <td class="text-end text-nowrap">
                         <a class="btn btn-outline-warning btn-sm"
-                           th:href="@{/produtos/editar/{id}(id=${produto.id})}">
+                           th:href="@{/epis/editar/{id}(id=${epi.id})}">
                             Editar
                         </a>
 
                         <form class="d-inline"
-                              th:action="@{/produtos/excluir/{id}(id=${produto.id})}"
+                              th:action="@{/epis/excluir/{id}(id=${epi.id})}"
                               method="post"
-                              onsubmit="return confirm('Deseja excluir este produto?')">
+                              onsubmit="return confirm('Deseja excluir este epi?')">
                             <button class="btn btn-outline-danger btn-sm" type="submit">Excluir</button>
                         </form>
                     </td>
                 </tr>
 
-                <tr th:if="${#lists.isEmpty(produtos)}">
+                <tr th:if="${#lists.isEmpty(epis)}">
                     <td colspan="6" class="text-center py-5 text-secondary">
-                        Nenhum produto cadastrado.
+                        Nenhum epi cadastrado.
                     </td>
                 </tr>
                 </tbody>

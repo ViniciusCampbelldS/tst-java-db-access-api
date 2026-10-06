@@ -1,0 +1,82 @@
+package br.com.tst.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(
+    name = "funcionarios",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_funcionario_nome",
+        columnNames = "nome"
+    )
+)
+public class Funcionario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "Informe o nome da funcionario.")
+    @Size(max = 80, message = "O nome deve possuir no máximo 80 caracteres.")
+    @Column(nullable = false, length = 80)
+    private String nome;
+
+    @Size(max = 255, message = "A descrição deve possuir no máximo 255 caracteres.")
+    @Column(length = 255)
+    private String descricao;
+
+    @ManyToMany(mappedBy = "funcionarios")
+    private List<Epi> epis = new ArrayList<>();
+
+    public Funcionario() {
+    }
+
+    public Funcionario(String nome, String descricao) {
+        this.nome = nome;
+        this.descricao = descricao;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public List<Epi> getEpis() {
+        return epis;
+    }
+
+    public void setEpis(List<Epi> epis) {
+        this.epis = epis;
+    }
+}
