@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/funcionarios")
+@RequestMapping("/funcionarios")
 public class FuncionarioApiController {
 
     private final FuncionarioService funcionarioService;
@@ -51,7 +51,7 @@ public class FuncionarioApiController {
         funcionario = funcionarioService.salvar(funcionario);
         FuncionarioResponse response = FuncionarioResponse.from(funcionario);
         return ResponseEntity
-            .created(URI.create("/api/funcionarios/" + funcionario.getId()))
+            .created(URI.create("/funcionarios/" + funcionario.getId()))
             .body(response);
     }
 

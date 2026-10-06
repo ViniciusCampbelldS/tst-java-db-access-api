@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dias-notificacao")
+@RequestMapping("/dias-notificacao")
 public class DiasNotificacaoApiController {
 
     private final DiasNotificacaoService service;
@@ -49,7 +49,7 @@ public class DiasNotificacaoApiController {
             new DiasNotificacao(request.caOuNr(), request.isNorma(), request.diasAviso())
         );
         return ResponseEntity
-            .created(URI.create("/api/dias-notificacao/" + diasNotificacao.getId()))
+            .created(URI.create("/dias-notificacao/" + diasNotificacao.getId()))
             .body(DiasNotificacaoResponse.from(diasNotificacao));
     }
 

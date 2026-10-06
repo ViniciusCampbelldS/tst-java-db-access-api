@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/epis")
+@RequestMapping("/epis")
 public class EpiApiController {
 
     private final EpiService epiService;
@@ -44,7 +44,7 @@ public class EpiApiController {
 
         EpiResponse response = EpiResponse.from(epi);
 
-        return ResponseEntity.created(URI.create("/api/epis/" + epi.getId())).body(response);
+        return ResponseEntity.created(URI.create("/epis/" + epi.getId())).body(response);
     }
 
     //	Update/	Replaces an entire resource
