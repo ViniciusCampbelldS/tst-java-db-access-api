@@ -17,3 +17,7 @@ ativo e acessível pela rede; `localhost` aponta para o próprio container da
 aplicação, não para um banco separado. Configure essas variáveis também no ambiente local para apontar para
 uma instância PostgreSQL acessível. `DB_USERNAME` continua aceito como
 alternativa para o nome de usuário.
+
+Defina `SPRING_DATASOURCE_PASSWORD` com a senha atual do banco, sem colocá-la na
+URL JDBC e sem codificá-la como URL. Se uma senha anterior foi adicionada ao
+repositório, altere-a no provedor e atualize o segredo no Render.
