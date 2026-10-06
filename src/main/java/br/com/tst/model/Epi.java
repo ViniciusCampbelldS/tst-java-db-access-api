@@ -1,5 +1,4 @@
 package br.com.tst.model;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,7 +12,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +43,9 @@ public class Epi {
     @Column(nullable = false)
     private LocalDate vencimento;
 
+    @Column(nullable = false)
+    private boolean substituido;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "epi_funcionarios",
@@ -57,11 +58,12 @@ public class Epi {
     }
 
     public Epi(String ca, String lote, String nome, LocalDate vencimento,
-               List<Funcionario> funcionarios) {
+               boolean substituido, List<Funcionario> funcionarios) {
         this.ca = ca;
         this.lote = lote;
         this.nome = nome;
         this.vencimento = vencimento;
+        this.substituido = substituido;
         this.funcionarios = funcionarios;
     }
 
@@ -103,6 +105,14 @@ public class Epi {
 
     public void setVencimento(LocalDate vencimento) {
         this.vencimento = vencimento;
+    }
+
+    public boolean isSubstituido() {
+        return substituido;
+    }
+
+    public void setSubstituido(boolean substituido) {
+        this.substituido = substituido;
     }
 
     public List<Funcionario> getFuncionarios() {

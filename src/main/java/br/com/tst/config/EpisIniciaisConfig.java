@@ -21,6 +21,7 @@ public class EpisIniciaisConfig {
                     "LOTE-CAP-2030",
                     "Capacete de segurança",
                     LocalDate.parse("2030-12-31"),
+                    false,
                     List.of()
                 );
                 Epi epiOculos = new Epi(
@@ -28,6 +29,7 @@ public class EpisIniciaisConfig {
                     "LOTE-OC-2031",
                     "Óculos de proteção",
                     LocalDate.parse("2031-06-30"),
+                    false,
                     List.of()
                 );
 

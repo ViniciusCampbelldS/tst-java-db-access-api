@@ -30,6 +30,8 @@ public class EpiForm {
     @NotNull(message = "Informe o vencimento.")
     private LocalDate vencimento;
 
+    private boolean substituido;
+
     @NotEmpty(message = "Selecione ao menos uma funcionario.")
     private List<@NotNull @Positive Long> funcionarioIds = new ArrayList<>();
 
@@ -43,6 +45,7 @@ public class EpiForm {
         form.setLote(epi.getLote());
         form.setNome(epi.getNome());
         form.setVencimento(epi.getVencimento());
+        form.setSubstituido(epi.isSubstituido());
         form.setFuncionarioIds(
             epi.getFuncionarios().stream().map(funcionario -> funcionario.getId()).toList()
         );
@@ -87,6 +90,14 @@ public class EpiForm {
 
     public void setVencimento(LocalDate vencimento) {
         this.vencimento = vencimento;
+    }
+
+    public boolean isSubstituido() {
+        return substituido;
+    }
+
+    public void setSubstituido(boolean substituido) {
+        this.substituido = substituido;
     }
 
     public List<Long> getFuncionarioIds() {

@@ -22,6 +22,8 @@ public record EpiRequest(
     @NotNull(message = "Informe o vencimento.")
     Instant vencimento,
 
+    boolean substituido,
+
     @NotEmpty(message = "Informe ao menos uma funcionario.")
     List<@NotNull @Positive Long> funcionarioIds
 
