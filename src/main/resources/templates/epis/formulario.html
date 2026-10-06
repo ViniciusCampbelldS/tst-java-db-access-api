@@ -33,6 +33,14 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label" for="lote">Lote</label>
+                            <input id="lote" class="form-control"
+                                   th:classappend="${#fields.hasErrors('lote')} ? 'is-invalid'"
+                                   type="text" th:field="*{lote}" maxlength="20">
+                            <div class="invalid-feedback" th:errors="*{lote}"></div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label" for="nome">Nome</label>
                             <input id="nome" class="form-control"
                                    th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"

@@ -31,6 +31,11 @@ public class Epi {
     @Column(nullable = false, length = 15)
     private String ca;
 
+    @NotBlank(message = "Informe o lote.")
+    @Size(max = 20, message = "O lote deve possuir no máximo 20 caracteres.")
+    @Column(nullable = false, length = 20)
+    private String lote;
+
     @NotBlank(message = "Informe o nome do epi.")
     @Size(max = 600, message = "O nome deve possuir no máximo 600 caracteres.")
     @Column(nullable = false, length = 600)
@@ -51,8 +56,10 @@ public class Epi {
     public Epi() {
     }
 
-    public Epi(String ca, String nome, LocalDate vencimento, List<Funcionario> funcionarios) {
+    public Epi(String ca, String lote, String nome, LocalDate vencimento,
+               List<Funcionario> funcionarios) {
         this.ca = ca;
+        this.lote = lote;
         this.nome = nome;
         this.vencimento = vencimento;
         this.funcionarios = funcionarios;
@@ -76,6 +83,14 @@ public class Epi {
 
     public void setCa(String ca) {
         this.ca = ca;
+    }
+
+    public String getLote() {
+        return lote;
+    }
+
+    public void setLote(String lote) {
+        this.lote = lote;
     }
 
     public void setNome(String nome) {

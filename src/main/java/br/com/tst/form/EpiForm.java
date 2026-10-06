@@ -19,6 +19,10 @@ public class EpiForm {
     @Size(max = 15, message = "O CA deve possuir no máximo 15 caracteres.")
     private String ca;
 
+    @NotBlank(message = "Informe o lote.")
+    @Size(max = 20, message = "O lote deve possuir no máximo 20 caracteres.")
+    private String lote;
+
     @NotBlank(message = "Informe o nome do epi.")
     @Size(max = 600, message = "O nome deve possuir no máximo 600 caracteres.")
     private String nome;
@@ -36,6 +40,7 @@ public class EpiForm {
         EpiForm form = new EpiForm();
         form.setId(epi.getId());
         form.setCa(epi.getCa());
+        form.setLote(epi.getLote());
         form.setNome(epi.getNome());
         form.setVencimento(epi.getVencimento());
         form.setFuncionarioIds(
@@ -62,6 +67,14 @@ public class EpiForm {
 
     public void setCa(String ca) {
         this.ca = ca;
+    }
+
+    public String getLote() {
+        return lote;
+    }
+
+    public void setLote(String lote) {
+        this.lote = lote;
     }
 
     public void setNome(String nome) {

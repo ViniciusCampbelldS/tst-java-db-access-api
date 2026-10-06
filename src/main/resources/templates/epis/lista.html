@@ -30,6 +30,7 @@
                 <tr>
                     <th>Código</th>
                     <th>CA</th>
+                    <th>Lote</th>
                     <th>Nome</th>
                     <th>Vencimento</th>
                     <th>Funcionarios</th>
@@ -40,6 +41,7 @@
                 <tr th:each="epi : ${epis}">
                     <td th:text="${epi.id}"></td>
                     <td th:text="${epi.ca}"></td>
+                    <td th:text="${epi.lote}"></td>
                     <td class="fw-semibold" th:text="${epi.nome}"></td>
                     <td th:text="${#temporals.format(epi.vencimento, 'dd/MM/yyyy')}"></td>
                     <td>
@@ -62,7 +64,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(epis)}">
-                    <td colspan="6" class="text-center py-5 text-secondary">
+                    <td colspan="7" class="text-center py-5 text-secondary">
                         Nenhum epi cadastrado.
                     </td>
                 </tr>

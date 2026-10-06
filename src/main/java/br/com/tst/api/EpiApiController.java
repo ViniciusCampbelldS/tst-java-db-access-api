@@ -72,6 +72,7 @@ public class EpiApiController {
         EpiForm form = new EpiForm();
         form.setId(id);
         form.setCa(epiRequest.ca());
+        form.setLote(epiRequest.lote());
         form.setNome(epiRequest.nome());
         form.setVencimento(epiRequest.vencimento().atZone(ZoneOffset.UTC).toLocalDate());
         form.setFuncionarioIds(epiRequest.funcionarioIds());
