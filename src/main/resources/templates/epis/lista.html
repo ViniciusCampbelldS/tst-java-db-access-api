@@ -33,6 +33,7 @@
                     <th>Lote</th>
                     <th>Nome</th>
                     <th>Vencimento</th>
+                    <th>Substituído</th>
                     <th>Funcionarios</th>
                     <th class="text-end">Ações</th>
                 </tr>
@@ -44,6 +45,7 @@
                     <td th:text="${epi.lote}"></td>
                     <td class="fw-semibold" th:text="${epi.nome}"></td>
                     <td th:text="${#temporals.format(epi.vencimento, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${epi.substituido ? 'Sim' : 'Não'}"></td>
                     <td>
                         <span th:each="funcionario, status : ${epi.funcionarios}"
                               th:text="${funcionario.nome + (status.last ? '' : ', ')}"></span>
@@ -64,7 +66,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(epis)}">
-                    <td colspan="7" class="text-center py-5 text-secondary">
+                    <td colspan="8" class="text-center py-5 text-secondary">
                         Nenhum epi cadastrado.
                     </td>
                 </tr>

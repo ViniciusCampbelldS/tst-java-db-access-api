@@ -50,6 +50,7 @@ public class EpiService {
         epi.setLote(form.getLote().trim());
         epi.setNome(form.getNome().trim());
         epi.setVencimento(form.getVencimento());
+        epi.setSubstituido(form.isSubstituido());
         epi.setFuncionarios(funcionarios);
 
         return epiRepository.save(epi);

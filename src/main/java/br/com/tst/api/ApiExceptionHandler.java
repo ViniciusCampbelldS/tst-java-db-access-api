@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice(
-        basePackages = "br.com.loja.api"
+        basePackages = "br.com.tst.api"
 )
 
 public class ApiExceptionHandler {

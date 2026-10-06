@@ -12,6 +12,7 @@ public record EpiResponse(
         String lote,
         String nome,
         Instant vencimento,
+        boolean substituido,
         List<FuncionarioResponse> funcionarios
 ) {
  public  static EpiResponse from (Epi epi){
@@ -21,6 +22,7 @@ public record EpiResponse(
            epi.getLote(),
            epi.getNome(),
            epi.getVencimento().atStartOfDay(ZoneOffset.UTC).toInstant(),
+           epi.isSubstituido(),
            epi.getFuncionarios().stream().map(FuncionarioResponse::from).toList()
    );
  }
