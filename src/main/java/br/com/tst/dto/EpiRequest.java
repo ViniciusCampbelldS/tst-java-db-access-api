@@ -1,8 +1,7 @@
 package br.com.tst.dto;
 
 import jakarta.validation.constraints.*;
-
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public record EpiRequest(
@@ -20,7 +19,7 @@ public record EpiRequest(
     String nome,
 
     @NotNull(message = "Informe o vencimento.")
-    Instant vencimento,
+    LocalDate vencimento,
 
     boolean substituido,
 

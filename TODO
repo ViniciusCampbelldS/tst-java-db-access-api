@@ -1,0 +1,11 @@
+[ ] NR:
+    [ ] Model,
+    [ ] Repository,
+    [ ] Request,
+    [ ] Response,
+    [ ] IniciaisConfig,
+    [ ] ApiController;
+
+
+[ ] Conseguir criar um novo Epi pelo site:
+    [ ] Formato da data

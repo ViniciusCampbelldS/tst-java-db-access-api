@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
-import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
@@ -27,7 +26,7 @@ public class EpiApiController {
 
     // Listar todos Epis
     @GetMapping
-    public List<EpiResponse> list(){
+    public List<EpiResponse> list() {
         return epiService.listar().stream().map(EpiResponse::from).toList();
     }
 
@@ -80,7 +79,6 @@ public class EpiApiController {
     }
 
 
-
     //	Update = Replaces an entire resource - PUT /epis/{id}
     @PutMapping("/{id}")
     public EpiResponse atualizar(
@@ -94,7 +92,6 @@ public class EpiApiController {
     }
 
 
-
     //	DELETE /epis/{id}
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -103,15 +100,25 @@ public class EpiApiController {
     }
 
 
-    private EpiForm converterParaForm (Long id, EpiRequest epiRequest){
+    private EpiForm converterParaForm(Long id, EpiRequest epiRequest) {
+        // Cria o objeto intermediário utilizado pelo service.
         EpiForm form = new EpiForm();
+        // Define o ID; null representa um novo registro.
         form.setId(id);
+        // Copia o Certificado de Aprovação.
         form.setCa(epiRequest.ca());
+        // Copia o lote.
         form.setLote(epiRequest.lote());
+        // Copia o nome.
         form.setNome(epiRequest.nome());
-        form.setVencimento(epiRequest.vencimento().atZone(ZoneOffset.UTC).toLocalDate());
+        // Copia a data diretamente como LocalDate.
+        // Não converte para Instant nem aplica fuso horário.
+        form.setVencimento(epiRequest.vencimento());
+        // Copia o estado de substituição.
         form.setSubstituido(epiRequest.substituido());
+        // Copia os IDs dos funcionários relacionados.
         form.setFuncionarioIds(epiRequest.funcionarioIds());
+        // Devolve o objeto preenchido.
         return form;
     }
 }
