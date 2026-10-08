@@ -1,5 +1,6 @@
 package br.com.tst.service;
 
+import br.com.tst.dto.FuncionarioPatchRequest;
 import br.com.tst.model.Funcionario;
 import br.com.tst.repository.EpiRepository;
 import br.com.tst.repository.FuncionarioRepository;
@@ -72,6 +73,38 @@ public class FuncionarioService {
 
         // Persiste no banco.
         return funcionarioRepository.save(funcionario);
+    }
+
+    /**
+     * Atualiza somente os campos informados.
+     */
+    @Transactional
+    public Funcionario atualizarParcial(Long id, FuncionarioPatchRequest request) {
+        Funcionario funcionario = buscar(id);
+
+        if (request.nome() != null) {
+            funcionario.setNome(request.nome());
+        }
+        if (request.cargo() != null) {
+            funcionario.setCargo(request.cargo());
+        }
+        if (request.cpf() != null) {
+            funcionario.setCpf(request.cpf());
+        }
+        if (request.setor() != null) {
+            funcionario.setSetor(request.setor());
+        }
+        if (request.permissoes() != null) {
+            funcionario.setPermissoes(request.permissoes());
+        }
+        if (request.status() != null) {
+            funcionario.setStatus(request.status());
+        }
+        if (request.nRs() != null) {
+            funcionario.setnRs(request.nRs());
+        }
+
+        return salvar(funcionario);
     }
 
     /**

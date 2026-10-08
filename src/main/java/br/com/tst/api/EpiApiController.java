@@ -2,6 +2,7 @@ package br.com.tst.api;
 
 import br.com.tst.dto.EpiBulkCreateResponse;
 import br.com.tst.dto.EpiCreateRequest;
+import br.com.tst.dto.EpiPatchRequest;
 import br.com.tst.dto.EpiRequest;
 import br.com.tst.dto.EpiResponse;
 import br.com.tst.form.EpiForm;
@@ -89,6 +90,13 @@ public class EpiApiController {
         );
 
         return EpiResponse.from(epi);
+    }
+
+    @PatchMapping("/{id}")
+    public EpiResponse atualizarParcial(
+            @PathVariable Long id,
+            @Valid @RequestBody EpiPatchRequest request) {
+        return EpiResponse.from(epiService.atualizarParcial(id, request));
     }
 
 

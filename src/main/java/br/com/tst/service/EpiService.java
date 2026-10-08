@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import br.com.tst.dto.EpiCreateRequest;
+import br.com.tst.dto.EpiPatchRequest;
 import br.com.tst.dto.EpiRequest;
 import br.com.tst.form.EpiForm;
 import br.com.tst.model.Epi;
@@ -61,6 +62,37 @@ public class EpiService {
         epi.setVencimento(form.getVencimento());
         epi.setSubstituido(form.isSubstituido());
         epi.setFuncionarios(funcionarios);
+
+        return epiRepository.save(epi);
+    }
+
+    @Transactional
+    public Epi atualizarParcial(Long id, EpiPatchRequest request) {
+        Epi epi = buscar(id);
+
+        if (request.ca() != null) {
+            epi.setCa(request.ca().trim());
+        }
+        if (request.lote() != null) {
+            epi.setLote(request.lote().trim());
+        }
+        if (request.nome() != null) {
+            epi.setNome(request.nome().trim());
+        }
+        if (request.vencimento() != null) {
+            epi.setVencimento(request.vencimento());
+        }
+        if (request.substituido() != null) {
+            epi.setSubstituido(request.substituido());
+        }
+        if (request.funcionarioIds() != null) {
+            List<Funcionario> funcionarios = request.funcionarioIds()
+                    .stream()
+                    .distinct()
+                    .map(funcionarioService::buscar)
+                    .toList();
+            epi.setFuncionarios(funcionarios);
+        }
 
         return epiRepository.save(epi);
     }

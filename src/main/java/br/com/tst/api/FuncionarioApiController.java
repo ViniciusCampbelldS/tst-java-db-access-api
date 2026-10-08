@@ -1,6 +1,7 @@
 package br.com.tst.api;
 
 import br.com.tst.dto.FuncionarioRequest;
+import br.com.tst.dto.FuncionarioPatchRequest;
 import br.com.tst.dto.FuncionarioResponse;
 import br.com.tst.model.Funcionario;
 import br.com.tst.service.FuncionarioService;
@@ -128,6 +129,21 @@ public class FuncionarioApiController {
 
         // Devolve o registro atualizado.
         return FuncionarioResponse.from(atualizado);
+    }
+
+    /**
+     * PATCH /funcionarios/{id}
+     *
+     * Atualiza somente os campos enviados.
+     */
+    @PatchMapping("/{id}")
+    public FuncionarioResponse atualizarParcial(
+            @PathVariable Long id,
+            @Valid @RequestBody FuncionarioPatchRequest request
+    ) {
+        return FuncionarioResponse.from(
+                funcionarioService.atualizarParcial(id, request)
+        );
     }
 
     /**
