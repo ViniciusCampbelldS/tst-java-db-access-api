@@ -69,9 +69,9 @@ public class Funcionario {
         name = "funcionarios_nrs",
         joinColumns = @JoinColumn(name = "funcionario_id")
     )
-    @Column(name = "nr", nullable = false, length = 15)
+    @Column(name = "nr", nullable = false, length = 250)
     private List<@NotBlank(message = "Cada NR deve possuir um valor.")
-                  @Size(max = 15, message = "Cada NR deve possuir no máximo 15 caracteres.") String> nRs =
+                  @Size(max = 250, message = "Cada NR deve possuir no máximo 250 caracteres.") String> nRs =
         new ArrayList<>();
 
     @ManyToMany(mappedBy = "funcionarios")

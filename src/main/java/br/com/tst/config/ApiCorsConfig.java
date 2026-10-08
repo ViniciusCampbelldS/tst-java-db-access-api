@@ -11,10 +11,9 @@ public class ApiCorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .allowedOrigins(
-                "http://localhost:3000",
+                //era o nest "http://localhost:3000", "https://projetointegradosenac2026.netlify.app",
                 "http://localhost:4200",
-                "https://projetointegradosenac2026.netlify.app",
-                "https://tst-java-db-access-api.onrender.com"
+                "https://projetointegradosenac2026.netlify.app"
             )
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")

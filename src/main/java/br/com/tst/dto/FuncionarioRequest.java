@@ -1,44 +1,79 @@
 package br.com.tst.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import java.util.List;
 
+/** Dados recebidos pela API quando um funcionário é criado ou atualizado. */
 public record FuncionarioRequest(
-    @NotBlank(message = "Informe o nome do(a) funcionario.")
-    @Size(max = 100, message = "O nome deve possuir no máximo 100 caracteres.")
-    String nome,
 
-    @Size(max = 40, message = "O cargo deve possuir no máximo 40 caracteres.")
-    String cargo,
+        // Nome obrigatório
+        @NotBlank(message = "Informe o nome do funcionário.")
+        @Size(
+                max = 100,
+                message = "O nome deve possuir no máximo 100 caracteres."
+        )
+        String nome,
 
-    @NotBlank(message = "Informe o CPF.")
-    @Pattern(
-        regexp = "^(?:\\D*\\d){11}\\D*$",
-        message = "O CPF deve possuir exatamente 11 números."
-    )
-    String cpf,
+        // Cargo não obrigatório
+        @Size(
+                max = 40,
+                message = "O cargo deve possuir no máximo 40 caracteres."
+        )
+        String cargo,
 
-    @Size(max = 40, message = "O setor deve possuir no máximo 40 caracteres.")
-    String setor,
+        // CPF obrigatório com exatamente 11 números.
+        @NotBlank(message = "Informe o CPF.")
+        @Pattern(
+                // Ignora não números, verifica se são 11 números
+                regexp = "^(?:\\D*\\d){11}\\D*$",
+                message = "O CPF deve possuir exatamente 11 números."
+        )
+        String cpf,
 
-    @NotBlank(message = "Informe as permissões do(a) funcionario.")
-    @Pattern(regexp = "ADM|field|tst", message = "As permissões devem ser ADM, field ou tst.")
-    String permicoes,
+        // Setor não obrigatório
+        @Size(
+                max = 40,
+                message = "O setor deve possuir no máximo 40 caracteres."
+        )
+        String setor,
 
-    @NotBlank(message = "Informe o status do(a) funcionario.")
-    @Pattern(regexp = "At|Af|In", message = "O status deve ser At, Af ou In.")
-    String status,
+        // Permissão de acesso.
+        //
+        // ADM   = administrador
+        // field = funcionário
+        // tst   = técnico de segurança
+        @NotBlank(message = "Informe as permissões do funcionário.")
+        @Pattern(
+                regexp = "ADM|field|tst",
+                message = "As permissões devem ser ADM, field ou tst."
+        )
+        String permissoes,
 
-    @NotNull(message = "Informe a lista de NRs.")
-    @JsonProperty("nRs")
-    @JsonAlias({"NRs", "nrs"})
-    List<@NotBlank(message = "Cada NR deve possuir um valor.")
-         @Size(max = 15, message = "Cada NR deve possuir no máximo 15 caracteres.") String> nRs
+        // Status do funcionário na empresa.
+        //
+        // At = Ativo
+        // Af = Afastado
+        // In = Inativo
+        @NotBlank(message = "Informe o status do funcionário.")
+        @Pattern(
+                regexp = "At|Af|In",
+                message = "O status deve ser At, Af ou In."
+        )
+        String status,
+
+        // Lista de NRs relacionadas ao funcionário.
+        @NotNull(message = "Informe a lista de NRs.")
+        List<
+                @NotBlank(message = "Cada NR deve possuir um valor.")
+                @Size(
+                        max = 250,
+                        message = "Cada NR deve possuir no máximo 250 caracteres."
+                )
+                        String
+                > nRs
+
 ) {
 }

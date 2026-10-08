@@ -24,7 +24,6 @@ public record EpiRequest(
 
     boolean substituido,
 
-    @NotEmpty(message = "Informe ao menos uma funcionario.")
     List<@NotNull @Positive Long> funcionarioIds
 
     ) {
