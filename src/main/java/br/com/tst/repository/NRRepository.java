@@ -1,4 +1,9 @@
 package br.com.tst.repository;
 
-public interface NRRepository {
+import br.com.tst.model.NR;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface NRRepository extends JpaRepository<NR, Long> {
+
+    boolean existsByNome(String nome);
 }

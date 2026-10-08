@@ -1,10 +1,10 @@
-[ ] NR:
-    [ ] Model,
-    [ ] Repository,
-    [ ] Request,
-    [ ] Response,
-    [ ] IniciaisConfig,
-    [ ] ApiController;
+[x] NR:
+    [x] Model,
+    [x] Repository,
+    [x] Request,
+    [x] Response,
+    [x] IniciaisConfig,
+    [x] ApiController;
 
 
 [ ] Conseguir criar um novo Epi pelo site:
