@@ -10,14 +10,17 @@ public class ApiCorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(
-                //era o nest "http://localhost:3000", "https://projetointegradosenac2026.netlify.app",
-                "http://localhost:4200",
-                "https://projetointegradosenac2026.netlify.app"
-            )
-            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .exposedHeaders("Location")
-            .maxAge(3600);
+                .allowedOrigins(
+                        //era o nest "http://localhost:3000", "https://projetointegradosenac2026.netlify.app",
+                        "http://localhost:4200",
+                        "https://projetointegradosenac2026.netlify.app",
+                        "https://projetofullstack2026.vercel.app"
+                )
+                .allowedMethods(
+                        "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+                )
+                .allowedHeaders("*")
+                .exposedHeaders("Location")
+                .maxAge(3600);
     }
 }
