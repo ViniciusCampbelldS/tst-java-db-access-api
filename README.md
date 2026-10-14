@@ -14,12 +14,12 @@ SPRING_DATASOURCE_PASSWORD=<senha atual do banco>
 ```
 
 Como URL, usuário e senha são configurados separadamente pelo Spring (em application.properties), não
-acrescente `user=` ou `password=` à URL JDBC. Informe a senha atual sem
-codificação de URL (%20 por exemplo) na variável `SPRING_DATASOURCE_PASSWORD`.
+acrescente `user=` ou `password=` à URL JDBC. Informe a senha atual **SEM**
+codificação de URL (%20 para ' ' por exemplo).
 
 No Render, use o host (aws-0-us-east-1.pooler.supabase.com) e a porta (5432) fornecidos pelo provedor do
 banco e confirme que ele aceita conexões a partir do serviço da aplicação. Para Supabase no Render,
-prefira o **Session pooler** porque a conexão direta não é acessível por
+ative o **Session pooler** porque a conexão direta não é acessível por
 IPv4.
 
 Configure as mesmas variáveis no ambiente local (do Render) para apontar a uma instância
