@@ -69,7 +69,7 @@ public class Funcionario {
     private List<NR> normas = new ArrayList<>();
     @Transient private List<String> nRs;
     public List<NR> getNormas() { return normas; }
-    public void setNormas(List<NR> normas) { this.normas = normas; this.nRs = null; }
+    public void setNormas(List<NR> normas) { this.normas = new ArrayList<>(normas); this.nRs = null; }
 
     @Transient
     private List<Epi> epis = new ArrayList<>();
