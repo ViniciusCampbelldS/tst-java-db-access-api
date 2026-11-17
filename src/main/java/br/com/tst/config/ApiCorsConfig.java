@@ -14,7 +14,10 @@ public class ApiCorsConfig implements WebMvcConfigurer {
                         //era o nest "http://localhost:3000", "https://projetointegradosenac2026.netlify.app",
                         "http://localhost:4200",
                         "https://projetointegradosenac2026.netlify.app",
-                        "https://projetofullstack2026.vercel.app"
+                        "https://projetofullstack2026.vercel.app",
+                        "https://projetofullstack2026-chi.vercel.app",
+                        "https://projetofullstack2026-viniciuscampbelletm20182-3124.vercel.app",
+                        "https://projetofullstack2026-git-main-viniciuscampbelletm20182-3124.vercel.app"
                 )
                 .allowedMethods(
                         "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
