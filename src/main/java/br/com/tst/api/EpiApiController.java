@@ -29,6 +29,11 @@ public class EpiApiController {
 
     @GetMapping("/disponiveis")
     public List<EpiResponse> disponiveis(){return epiService.disponiveis().stream().map(EpiResponse::from).toList();}
+    public record Descarte(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=2000)String motivo,@jakarta.validation.constraints.NotNull java.time.LocalDate data){}
+    public record Substituicao(@jakarta.validation.constraints.NotNull @jakarta.validation.constraints.Positive Long novoEpiId,@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max=2000)String motivo,@jakarta.validation.constraints.NotNull java.time.LocalDate data){}
+    @PostMapping("/{id}/descarte") public void descartar(@PathVariable Long id,@Valid @RequestBody Descarte r,org.springframework.security.core.Authentication a){entregas.descartar(id,r.motivo(),r.data(),Long.valueOf(a.getName()));}
+    @PostMapping("/{id}/substituicao") public br.com.tst.service.EntregaEpiService.Entrega substituir(@PathVariable Long id,@Valid @RequestBody Substituicao r,org.springframework.security.core.Authentication a){return entregas.substituir(id,r.novoEpiId(),r.motivo(),r.data(),Long.valueOf(a.getName()));}
+
     // Listar todos Epis
     @GetMapping
     public List<EpiResponse> list() {
