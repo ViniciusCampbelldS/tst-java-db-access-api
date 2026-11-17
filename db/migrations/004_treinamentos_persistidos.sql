@@ -30,6 +30,18 @@ BEGIN
     END IF;
 END $$;
 
+-- Em bases com registros legados, faz o próximo ID continuar após o maior valor já existente.
+SELECT setval(
+    pg_get_serial_sequence('public.turmas_treinamento', 'id'),
+    GREATEST((SELECT COALESCE(MAX(id), 0) FROM public.turmas_treinamento), 1),
+    (SELECT COUNT(*) > 0 FROM public.turmas_treinamento)
+);
+SELECT setval(
+    pg_get_serial_sequence('public.presencas_treinamento', 'id'),
+    GREATEST((SELECT COALESCE(MAX(id), 0) FROM public.presencas_treinamento), 1),
+    (SELECT COUNT(*) > 0 FROM public.presencas_treinamento)
+);
+
 CREATE UNIQUE INDEX IF NOT EXISTS uk_presencas_turma_funcionario
     ON public.presencas_treinamento(turma_id, funcionario_id);
 
