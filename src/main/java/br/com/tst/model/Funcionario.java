@@ -71,7 +71,7 @@ public class Funcionario {
     public List<NR> getNormas() { return normas; }
     public void setNormas(List<NR> normas) { this.normas = normas; this.nRs = null; }
 
-    @ManyToMany(mappedBy = "funcionarios")
+    @Transient
     private List<Epi> epis = new ArrayList<>();
 
     @com.fasterxml.jackson.annotation.JsonIgnore

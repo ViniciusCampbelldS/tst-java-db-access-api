@@ -24,8 +24,8 @@ public class SecurityConfig {
  .requestMatchers(HttpMethod.GET,"/funcionarios/**").hasAnyRole("ADM","rh","tst","gerencia")
  .requestMatchers(HttpMethod.POST,"/funcionarios/*/senha").hasAnyRole("ADM","gerencia")
  .requestMatchers("/funcionarios/**").hasAnyRole("ADM","rh","gerencia")
- .requestMatchers(HttpMethod.GET,"/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**").hasAnyRole("ADM","tst","rh","gerencia")
- .requestMatchers("/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**").hasAnyRole("ADM","tst","gerencia")
+ .requestMatchers(HttpMethod.GET,"/entregas-epis/**","/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**").hasAnyRole("ADM","tst","rh","gerencia")
+ .requestMatchers("/entregas-epis/**","/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**").hasAnyRole("ADM","tst","gerencia")
  .anyRequest().denyAll())
  .addFilterBefore(new SessionFilter(repository),UsernamePasswordAuthenticationFilter.class).build();
  }

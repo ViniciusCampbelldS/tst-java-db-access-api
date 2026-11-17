@@ -11,6 +11,10 @@ public record EpiResponse(
         String nome,
         LocalDate vencimento,
         boolean substituido,
+        java.time.Instant descartadoEm,
+        java.time.LocalDate dataDescarte,
+        String motivoDescarte,
+        Long responsavelDescarteId,
         List<FuncionarioResponse> funcionarios
 ) {
     public static EpiResponse from(Epi epi) {
@@ -21,6 +25,7 @@ public record EpiResponse(
                 epi.getNome(),
                 epi.getVencimento(),
                 epi.isSubstituido(),
+                epi.getDescartadoEm(),epi.getDataDescarte(),epi.getMotivoDescarte(),epi.getResponsavelDescarteId(),
                 epi.getFuncionarios().stream().map(FuncionarioResponse::from).toList()
         );
     }

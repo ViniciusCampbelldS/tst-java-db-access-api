@@ -20,12 +20,15 @@ import java.util.List;
 @RequestMapping("/epis")
 public class EpiApiController {
 
+    @org.springframework.beans.factory.annotation.Autowired private br.com.tst.service.EntregaEpiService entregas;
     private final EpiService epiService;
 
     public EpiApiController(EpiService epiService) {
         this.epiService = epiService;
     }
 
+    @GetMapping("/disponiveis")
+    public List<EpiResponse> disponiveis(){return epiService.disponiveis().stream().map(EpiResponse::from).toList();}
     // Listar todos Epis
     @GetMapping
     public List<EpiResponse> list() {

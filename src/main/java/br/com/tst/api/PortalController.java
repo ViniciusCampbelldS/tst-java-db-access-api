@@ -9,13 +9,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 @RestController @RequestMapping("/portal")
 public class PortalController {
- private static final String POSSE="WITH fontes AS (select i.epi_id,e.funcionario_id,e.data_entrega,2 prioridade,e.id referencia from entrega_epi_itens i join entregas_epi e on e.id=i.entrega_id UNION ALL select epi_id,funcionario_id,data_entrega,1,id from entregas_epis UNION ALL select epi_id,funcionario_id,DATE '0001-01-01',0,0 from epi_funcionarios), atuais AS (select *,row_number() over(partition by epi_id order by data_entrega desc,prioridade desc,referencia desc,funcionario_id desc) ordem from fontes) ";
+ private static final String POSSE="WITH atuais AS (select i.epi_id,d.funcionario_id from entrega_epi_itens i join entregas_epi d on d.id=i.entrega_id where i.encerrado_em is null) ";
  private final JdbcTemplate jdbc;public PortalController(JdbcTemplate j){jdbc=j;}
- @GetMapping("/epis") public List<Map<String,Object>> epis(Authentication a){return jdbc.queryForList(POSSE+"select e.id,e.ca,e.nome,e.vencimento,e.substituido,coalesce(d.dias_aviso,30) as \"diasAviso\" from epis e join atuais f on f.epi_id=e.id and f.ordem=1 left join dias_notificacao_epis d on d.ca=e.ca where f.funcionario_id=?",Long.valueOf(a.getName()));}
+ @GetMapping("/epis") public List<Map<String,Object>> epis(Authentication a){return jdbc.queryForList(POSSE+"select e.id,e.ca,e.nome,e.vencimento,e.substituido,coalesce(d.dias_aviso,30) as \"diasAviso\" from epis e join atuais f on f.epi_id=e.id left join dias_notificacao_epis d on d.ca=e.ca where f.funcionario_id=?",Long.valueOf(a.getName()));}
  @GetMapping("/treinamentos") public List<Map<String,Object>> treinamentos(Authentication a){return jdbc.queryForList("select t.id,t.nr,t.nome,t.data,t.vencimento,p.presente,coalesce(d.dias_aviso,30) as \"diasAviso\" from turmas_treinamento t join presencas_treinamento p on p.turma_id=t.id left join dias_notificacao_treinamentos d on d.nr=substring(t.nr from '[0-9]+')::bigint where p.funcionario_id=?",Long.valueOf(a.getName()));}
  public record Relato(@NotNull @Positive Long epiId,@NotBlank @Size(max=100) String situacao,@Size(max=4000)String comentario){}
  @PostMapping("/relatos") @ResponseStatus(HttpStatus.CREATED) public void relato(@Valid @RequestBody Relato r,Authentication a){Long id=Long.valueOf(a.getName());
- Integer owns=jdbc.queryForObject(POSSE+"select count(*) from atuais where ordem=1 and epi_id=? and funcionario_id=?",Integer.class,r.epiId(),id);
+ Integer owns=jdbc.queryForObject(POSSE+"select count(*) from atuais where epi_id=? and funcionario_id=?",Integer.class,r.epiId(),id);
  if(owns==null||owns==0)throw new ResponseStatusException(HttpStatus.FORBIDDEN);
  jdbc.update("insert into relatos_epi(epi_id,funcionario_id,situacao,comentario,criado_em) values(?,?,?,?,CURRENT_TIMESTAMP)",r.epiId(),id,r.situacao(),r.comentario());
  }

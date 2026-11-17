@@ -45,13 +45,20 @@ public class Epi {
     @Column(nullable = false)
     private boolean substituido;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "epi_funcionarios",
-        joinColumns = @JoinColumn(name = "epi_id"),
-        inverseJoinColumns = @JoinColumn(name = "funcionario_id")
-    )
+    @jakarta.persistence.Transient
     private List<Funcionario> funcionarios = new ArrayList<>();
+
+    private java.time.Instant descartadoEm;
+    public java.time.Instant getDescartadoEm(){return descartadoEm;}
+
+    private java.time.LocalDate dataDescarte;
+    public java.time.LocalDate getDataDescarte(){return dataDescarte;}
+
+    private String motivoDescarte;
+    public String getMotivoDescarte(){return motivoDescarte;}
+
+    private Long responsavelDescarteId;
+    public Long getResponsavelDescarteId(){return responsavelDescarteId;}
 
     public Epi() {
     }
