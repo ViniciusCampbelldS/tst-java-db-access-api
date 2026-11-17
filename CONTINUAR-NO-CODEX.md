@@ -1,5 +1,7 @@
 # Continuar o projeto no Codex do computador
 
+O prompt completo para colar no novo chat está em [PROMPT-CODEX.md](PROMPT-CODEX.md). Preencha os caminhos locais; os links e as regras já estão incluídos.
+
 ## Abrir os projetos
 
 Instale Git, Node24, Java24 (JDK) e Maven3.9+. No PowerShell, escolha uma pasta de projetos e execute:

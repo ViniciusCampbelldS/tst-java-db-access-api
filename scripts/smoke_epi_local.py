@@ -36,5 +36,11 @@ assert call('/entregas-epis',token=w)[0]==403
 assert call('/epis/'+str(ids[1])+'/descarte','POST',{'motivo':'Tentativa','data':today},w)[0]==403
 code,own=call('/portal/epis',token=w);assert code==200 and ids[2]not in [x['id']for x in own]
 assert call('/auth/logout','POST',{},w)[0]==200
+# Inactive employees cannot receive a replacement; the old assignment stays intact.
+assert call('/funcionarios/2','PATCH',{'status':'In'},token)[0]==200
+assert call('/epis/'+str(ids[1])+'/substituicao','POST',{'novoEpiId':ids[5],'motivo':'Inativo','data':today},token)[0]==409
+assert not call('/epis/'+str(ids[1]),token=token)[1]['substituido']
+assert not call('/epis/'+str(ids[5]),token=token)[1]['funcionarios']
+assert call('/funcionarios/2','PATCH',{'status':'At'},token)[0]==200
 assert call('/auth/logout','POST',{},token)[0]==200
 print('PASS: physical bulk, CA suggestions, canonical delivery, replacement, discard/audit, rollback, duplicate/concurrent assignment, ownership and role restrictions.')
