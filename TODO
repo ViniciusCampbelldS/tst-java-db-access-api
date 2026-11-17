@@ -21,7 +21,7 @@ Este bloco registra a implementação mais recente e prevalece sobre os checklis
 - [x] Migração 003 aplicada ao Supabase antes do deploy da API; resta validar o fluxo de ficha na interface publicada.
 - [ ] Upload e download autorizado de imagens de relatos e documentos de treinamento.
 - [ ] Histórico completo de edições de EPI e treinamento; os eventos de posse não cobrem todas as alterações.
-  - [x] Backend implementado: migração 005 (historico_alteracoes append-only), HistoricoService e GET /historico (ADM/TST/Gerência).
+  - [x] Backend implementado: migração 005 (historico_alteracoes append-only, coluna area_do_site), HistoricoService e GET /historico (ADM/TST/Gerência).
   - [x] Teste Java (H2): edição de EPI gera evento com autor da sessão e diff; operário recebe 403.
   - [ ] Validar a migração 005 em PostgreSQL (trigger de imutabilidade) e aplicá-la no Supabase.
   - [ ] Frontend (projetofullstack2026): trocar getHistory() e as linhas estáticas por GET /historico.

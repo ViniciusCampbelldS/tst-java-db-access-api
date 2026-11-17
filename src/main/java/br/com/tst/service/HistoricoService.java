@@ -25,14 +25,14 @@ public class HistoricoService {
         this.json = json;
     }
 
-    public record Evento(Long id, Long autorId, String autorNome, java.time.Instant criadoEm, String entidade,
+    public record Evento(Long id, Long autorId, String autorNome, java.time.Instant criadoEm, String areaDoSite,
                          Long registroId, String acao, Object antes, Object depois) {}
 
     public record Pagina(List<Evento> itens, long total, int pagina, int tamanho) {}
 
     /** Grava na transação da operação; autor sempre vem da sessão autenticada. */
     @Transactional(propagation = Propagation.MANDATORY)
-    public void registrar(String entidade, long registroId, String acao, Map<String, ?> antes, Map<String, ?> depois) {
+    public void registrar(String areaDoSite, long registroId, String acao, Map<String, ?> antes, Map<String, ?> depois) {
         if (antes != null && depois != null) {
             var a = apenasAlterados(antes, depois);
             var d = apenasAlterados(depois, antes);
@@ -40,8 +40,8 @@ public class HistoricoService {
             antes = comContexto(a, antes);
             depois = comContexto(d, depois);
         }
-        jdbc.update("insert into historico_alteracoes(autor_id,entidade,registro_id,acao,antes,depois) values(?,?,?,?,cast(? as jsonb),cast(? as jsonb))",
-                autor(), entidade, registroId, acao, serializar(antes), serializar(depois));
+        jdbc.update("insert into historico_alteracoes(autor_id,area_do_site,registro_id,acao,antes,depois) values(?,?,?,?,cast(? as jsonb),cast(? as jsonb))",
+                autor(), areaDoSite, registroId, acao, serializar(antes), serializar(depois));
     }
 
     /** Chaves iniciadas por "_" são contexto (ex.: _funcionarioId): ficam sempre, sem o prefixo, e não contam como alteração. */
@@ -74,12 +74,12 @@ public class HistoricoService {
     }
 
     @Transactional(readOnly = true)
-    public Pagina listar(String entidade, Long registroId, Long autorId, java.time.LocalDate de, java.time.LocalDate ate, int pagina, int tamanho) {
+    public Pagina listar(String areaDoSite, Long registroId, Long autorId, java.time.LocalDate de, java.time.LocalDate ate, int pagina, int tamanho) {
         tamanho = Math.min(Math.max(tamanho, 1), 100);
         pagina = Math.max(pagina, 0);
         var where = new StringBuilder(" where 1=1");
         var args = new ArrayList<Object>();
-        if (entidade != null && !entidade.isBlank()) { where.append(" and h.entidade=?"); args.add(entidade); }
+        if (areaDoSite != null && !areaDoSite.isBlank()) { where.append(" and h.area_do_site=?"); args.add(areaDoSite); }
         if (registroId != null) { where.append(" and h.registro_id=?"); args.add(registroId); }
         if (autorId != null) { where.append(" and h.autor_id=?"); args.add(autorId); }
         if (de != null) { where.append(" and h.criado_em >= ?"); args.add(java.sql.Timestamp.from(de.atStartOfDay(java.time.ZoneId.of("America/Sao_Paulo")).toInstant())); }
@@ -88,10 +88,10 @@ public class HistoricoService {
         var paginaArgs = new ArrayList<>(args);
         paginaArgs.add(tamanho);
         paginaArgs.add((long) pagina * tamanho);
-        var itens = jdbc.query("select h.id,h.autor_id,f.nome autor_nome,h.criado_em,h.entidade,h.registro_id,h.acao,h.antes,h.depois from historico_alteracoes h left join funcionarios f on f.id=h.autor_id"
+        var itens = jdbc.query("select h.id,h.autor_id,f.nome autor_nome,h.criado_em,h.area_do_site,h.registro_id,h.acao,h.antes,h.depois from historico_alteracoes h left join funcionarios f on f.id=h.autor_id"
                 + where + " order by h.criado_em desc,h.id desc limit ? offset ?", (rs, n) -> new Evento(
                 rs.getLong("id"), (Long) rs.getObject("autor_id"), rs.getString("autor_nome"),
-                rs.getTimestamp("criado_em").toInstant(), rs.getString("entidade"), rs.getLong("registro_id"),
+                rs.getTimestamp("criado_em").toInstant(), rs.getString("area_do_site"), rs.getLong("registro_id"),
                 rs.getString("acao"), ler(rs.getString("antes")), ler(rs.getString("depois"))), paginaArgs.toArray());
         return new Pagina(itens, total == null ? 0 : total, pagina, tamanho);
     }
