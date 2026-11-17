@@ -37,7 +37,8 @@ public class NRApiController {
 
     @PostMapping
     public ResponseEntity<NRResponse> cadastrar(@Valid @RequestBody NRRequest request) {
-        NR nr = nrRepository.save(new NR(request.nome()));
+        if (nrRepository.existsById(request.id())) throw new IllegalArgumentException("Número de NR já cadastrado.");
+        NR nr = nrRepository.save(new NR(request.id(), request.nome().trim()));
         return ResponseEntity.created(URI.create("/nrs/" + nr.getId()))
                 .body(NRResponse.from(nr));
     }
@@ -47,6 +48,7 @@ public class NRApiController {
             @PathVariable Long id,
             @Valid @RequestBody NRRequest request
     ) {
+        if (!id.equals(request.id())) throw new IllegalArgumentException("O número da NR não pode ser alterado.");
         NR nr = buscarNr(id);
         nr.setNome(request.nome());
         return NRResponse.from(nrRepository.save(nr));

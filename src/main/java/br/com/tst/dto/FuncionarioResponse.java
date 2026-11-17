@@ -10,6 +10,7 @@ import java.util.List;
  */
 public record FuncionarioResponse(
         Long id,
+        String email,
         String nome,
         String cargo,
         String cpf,
@@ -27,6 +28,7 @@ public record FuncionarioResponse(
     public static FuncionarioResponse from(@NotNull Funcionario funcionario) {
         return new FuncionarioResponse(
                 funcionario.getId(),
+                funcionario.getEmail(),
                 funcionario.getNome(),
                 funcionario.getCargo(),
                 funcionario.getCpf(),

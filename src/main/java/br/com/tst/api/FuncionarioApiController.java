@@ -33,6 +33,14 @@ public class FuncionarioApiController {
      *
      * Retorna todos os funcionários.
      */
+    public record SenhaRequest(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(min=8,max=72)String senha){}
+    @org.springframework.beans.factory.annotation.Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    @PostMapping("/{id}/senha") @org.springframework.transaction.annotation.Transactional
+    public void definirSenha(@PathVariable Long id,@Valid @RequestBody SenhaRequest r){
+       var f=funcionarioService.buscar(id);f.setSenhaHash(passwordEncoder.encode(r.senha()));f.setSessaoTokenHash(null);f.setSessaoExpiraEm(null);f.setRecuperacaoTokenHash(null);f.setRecuperacaoExpiraEm(null);
+    }
+    @GetMapping("/me")
+    public FuncionarioResponse me(org.springframework.security.core.Authentication auth) { return FuncionarioResponse.from(funcionarioService.buscar(Long.valueOf(auth.getName()))); }
     @GetMapping
     public List<FuncionarioResponse> listar() {
 
@@ -67,6 +75,7 @@ public class FuncionarioApiController {
             @Valid @RequestBody FuncionarioRequest request
     ) {
 
+        br.com.tst.security.AccountPolicy.checkRole(null,request.permissoes());
         // Cria uma nova entidade utilizando os dados recebidos.
         Funcionario funcionario = new Funcionario(
                 request.nome(),
@@ -76,6 +85,7 @@ public class FuncionarioApiController {
         );
 
         // Copia a permissão recebida do Angular.
+        funcionario.setEmail(request.email());
         funcionario.setPermissoes(request.permissoes());
 
         // Copia o status recebido do Angular.
@@ -114,11 +124,13 @@ public class FuncionarioApiController {
         Funcionario funcionario =
                 funcionarioService.buscar(id);
 
+        br.com.tst.security.AccountPolicy.checkRole(funcionario.getPermissoes(),request.permissoes());
         // Atualiza os campos.
         funcionario.setNome(request.nome());
         funcionario.setCargo(request.cargo());
         funcionario.setCpf(request.cpf());
         funcionario.setSetor(request.setor());
+        funcionario.setEmail(request.email());
         funcionario.setPermissoes(request.permissoes());
         funcionario.setStatus(request.status());
         funcionario.setnRs(request.nRs());

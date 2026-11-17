@@ -1,0 +1,58 @@
+package br.com.tst;
+import br.com.tst.model.Funcionario;
+import br.com.tst.repository.FuncionarioRepository;
+import br.com.tst.security.TokenService;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
+@SpringBootTest(properties={"spring.datasource.url=jdbc:h2:mem:auth;MODE=PostgreSQL;DB_CLOSE_DELAY=-1","spring.datasource.driver-class-name=org.h2.Driver","spring.datasource.username=sa","spring.datasource.password=","spring.jpa.hibernate.ddl-auto=create-drop","app.recovery.enabled=true"})
+@AutoConfigureMockMvc
+class AuthIntegrationTest {
+ @Autowired MockMvc mvc;@Autowired FuncionarioRepository repository;@Autowired PasswordEncoder encoder;@Autowired ObjectMapper json;
+ @MockitoBean JavaMailSender mail;
+ final String password="Senha-de-teste-123";
+ Funcionario user(String cpf,String role){var f=new Funcionario("Teste","Cargo",cpf,"Setor");f.setEmail(cpf+"@marmetalurgia.com");f.setPermissoes(role);f.setSenhaHash(encoder.encode(password));return repository.save(f);}
+ String login(String cpf)throws Exception{return json.readTree(mvc.perform(post("/auth/login").contentType("application/json").content(json.writeValueAsString(java.util.Map.of("email",cpf,"senha",password)))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString()).get("access_token").asText();}
+ @Test void workerCannotReadOtherEmployeesAndOldTokenIsRevoked()throws Exception{
+ var f=user("11111111111","field");String token=login(f.getCpf());
+ mvc.perform(get("/funcionarios")).andExpect(status().isUnauthorized());
+ mvc.perform(get("/funcionarios").header("Authorization","Bearer "+token)).andExpect(status().isForbidden());
+ mvc.perform(get("/auth/me").header("Authorization","Bearer "+token)).andExpect(jsonPath("$.id").value(f.getId())).andExpect(jsonPath("$.senhaHash").doesNotExist());
+ mvc.perform(post("/auth/logout").header("Authorization","Bearer "+token)).andExpect(status().isOk());
+ mvc.perform(get("/auth/me").header("Authorization","Bearer "+token)).andExpect(status().isUnauthorized());
+ }
+ @Test void resetIsOneUseAndRevokesSession()throws Exception{
+ var f=user("22222222222","tst");String token=login(f.getCpf());
+ mvc.perform(post("/auth/recuperar-senha").contentType("application/json").content(json.writeValueAsString(java.util.Map.of("email",f.getEmail())))).andExpect(status().isOk());
+ var capture=org.mockito.ArgumentCaptor.forClass(SimpleMailMessage.class);verify(mail).send(capture.capture());String reset=capture.getValue().getText().split("token=")[1];
+ String payload=json.writeValueAsString(java.util.Map.of("token",reset,"senha","Nova-senha-teste-456"));
+ mvc.perform(post("/auth/redefinir-senha").contentType("application/json").content(payload)).andExpect(status().isOk());
+ mvc.perform(post("/auth/redefinir-senha").contentType("application/json").content(payload)).andExpect(status().isBadRequest());
+ mvc.perform(get("/auth/me").header("Authorization","Bearer "+token)).andExpect(status().isUnauthorized());
+ Assertions.assertNull(repository.findById(f.getId()).orElseThrow().getRecuperacaoTokenHash());
+ }
+ @Test void permissionsRespectRoleAndSessionUsesCurrentDatabaseRole()throws Exception{
+ var f=user("33333333333","rh");String token=login(f.getCpf());
+ mvc.perform(get("/funcionarios").header("Authorization","Bearer "+token)).andExpect(status().isOk());
+ mvc.perform(post("/dias-notificacao-epis").header("Authorization","Bearer "+token).contentType("application/json").content("{\"ca\":123,\"diasAviso\":30}")).andExpect(status().isForbidden());
+ f=repository.findById(f.getId()).orElseThrow();f.setPermissoes("gerencia");repository.save(f);
+ mvc.perform(post("/dias-notificacao-epis").header("Authorization","Bearer "+token).contentType("application/json").content("{\"ca\":123,\"diasAviso\":30}")).andExpect(status().isCreated());
+ }
+ @Test void hrCannotSetPasswordsOrElevateOwnRole()throws Exception{
+ var f=user("44444444444","rh");String token=login(f.getCpf());
+ mvc.perform(post("/funcionarios/"+f.getId()+"/senha").header("Authorization","Bearer "+token).contentType("application/json").content("{\"senha\":\"Nova-senha-123\"}")).andExpect(status().isForbidden());
+ mvc.perform(patch("/funcionarios/"+f.getId()).header("Authorization","Bearer "+token).contentType("application/json").content("{\"permissoes\":\"ADM\"}")).andExpect(status().isForbidden());
+ Assertions.assertEquals("rh",repository.findById(f.getId()).orElseThrow().getPermissoes());
+ }
+ @Test void tokenEntropyAndDigest(){String a=TokenService.token(),b=TokenService.token();Assertions.assertNotEquals(a,b);Assertions.assertEquals(64,TokenService.hash(a).length());}
+}

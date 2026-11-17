@@ -6,9 +6,8 @@ import java.util.List;
 
 public record EpiRequest(
 
-    @NotBlank(message = "Informe o CA.")
-    @Size(max = 15, message = "O CA deve possuir no máximo 15 caracteres.")
-    String ca,
+    @jakarta.validation.constraints.Positive
+    @jakarta.validation.constraints.NotNull Integer ca,
 
     @NotBlank(message = "Informe o lote.")
     @Size(max = 20, message = "O lote deve possuir no máximo 20 caracteres.")

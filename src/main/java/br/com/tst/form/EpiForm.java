@@ -15,9 +15,8 @@ public class EpiForm {
 
     private Long id;
 
-    @NotBlank(message = "Informe o CA.")
-    @Size(max = 15, message = "O CA deve possuir no máximo 15 caracteres.")
-    private String ca;
+    @jakarta.validation.constraints.Positive
+    private Integer ca;
 
     @NotBlank(message = "Informe o lote.")
     @Size(max = 20, message = "O lote deve possuir no máximo 20 caracteres.")
@@ -64,11 +63,11 @@ public class EpiForm {
         return nome;
     }
 
-    public String getCa() {
+    public Integer getCa() {
         return ca;
     }
 
-    public void setCa(String ca) {
+    public void setCa(Integer ca) {
         this.ca = ca;
     }
 

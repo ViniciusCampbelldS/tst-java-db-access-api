@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 public class NR {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Informe o nome da NR.")
@@ -25,7 +24,8 @@ public class NR {
     public NR() {
     }
 
-    public NR(String nome) {
+    public NR(Long id, String nome) {
+        this.id = id;
         this.nome = nome;
     }
 

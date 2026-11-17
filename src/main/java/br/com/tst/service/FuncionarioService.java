@@ -20,6 +20,7 @@ public class FuncionarioService {
     // Repositório de EPIs.
     // É utilizado para impedir a exclusão de funcionários
     // que ainda possuem EPIs vinculados.
+    @org.springframework.beans.factory.annotation.Autowired private br.com.tst.repository.NRRepository nrRepository;
     private final EpiRepository epiRepository;
 
     // Construtor
@@ -31,6 +32,8 @@ public class FuncionarioService {
         this.epiRepository = epiRepository;
     }
 
+    @Transactional(readOnly=true)
+    public java.util.List<br.com.tst.dto.EpiResponse> meusEpis(Long id){return epiRepository.findAll().stream().filter(e->e.getFuncionarios().stream().anyMatch(f->f.getId().equals(id))).map(br.com.tst.dto.EpiResponse::from).toList();}
     /**
      * Lista todos os funcionários.
      */
@@ -71,6 +74,8 @@ public class FuncionarioService {
                 funcionario.getCpf().replaceAll("\\D", "")
         );
 
+        if (funcionario.getEmail() != null) funcionario.setEmail(funcionario.getEmail().trim().toLowerCase(java.util.Locale.ROOT));
+        funcionario.setNormas(funcionario.getnRs().stream().distinct().map(nome -> nrRepository.findByNome(nome).orElseThrow(() -> new IllegalArgumentException("NR não cadastrada: " + nome))).toList());
         // Persiste no banco.
         return funcionarioRepository.save(funcionario);
     }
@@ -82,6 +87,7 @@ public class FuncionarioService {
     public Funcionario atualizarParcial(Long id, FuncionarioPatchRequest request) {
         Funcionario funcionario = buscar(id);
 
+        if (request.email() != null) funcionario.setEmail(request.email());
         if (request.nome() != null) {
             funcionario.setNome(request.nome());
         }
@@ -95,6 +101,7 @@ public class FuncionarioService {
             funcionario.setSetor(request.setor());
         }
         if (request.permissoes() != null) {
+            br.com.tst.security.AccountPolicy.checkRole(funcionario.getPermissoes(),request.permissoes());
             funcionario.setPermissoes(request.permissoes());
         }
         if (request.status() != null) {

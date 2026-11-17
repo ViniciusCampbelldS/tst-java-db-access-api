@@ -8,6 +8,7 @@ import java.util.List;
 
 /** Dados recebidos pela API quando um funcionário é criado ou atualizado. */
 public record FuncionarioRequest(
+        @jakarta.validation.constraints.Email @Size(max=254) String email,
 
         // Nome obrigatório
         @NotBlank(message = "Informe o nome do funcionário.")
@@ -47,7 +48,7 @@ public record FuncionarioRequest(
         // tst   = técnico de segurança
         @NotBlank(message = "Informe as permissões do funcionário.")
         @Pattern(
-                regexp = "ADM|field|tst",
+                regexp = "ADM|field|tst|rh|gerencia",
                 message = "As permissões devem ser ADM, field ou tst."
         )
         String permissoes,

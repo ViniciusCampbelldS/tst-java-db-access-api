@@ -24,10 +24,9 @@ public class Epi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Informe o CA.")
-    @Size(max = 15, message = "O CA deve possuir no máximo 15 caracteres.")
-    @Column(nullable = false, length = 15)
-    private String ca;
+    @jakarta.validation.constraints.Positive
+    @Column(nullable = false)
+    private Integer ca;
 
     @NotBlank(message = "Informe o lote.")
     @Size(max = 20, message = "O lote deve possuir no máximo 20 caracteres.")
@@ -57,7 +56,7 @@ public class Epi {
     public Epi() {
     }
 
-    public Epi(String ca, String lote, String nome, LocalDate vencimento,
+    public Epi(Integer ca, String lote, String nome, LocalDate vencimento,
                boolean substituido, List<Funcionario> funcionarios) {
         this.ca = ca;
         this.lote = lote;
@@ -79,11 +78,11 @@ public class Epi {
         return nome;
     }
 
-    public String getCa() {
+    public Integer getCa() {
         return ca;
     }
 
-    public void setCa(String ca) {
+    public void setCa(Integer ca) {
         this.ca = ca;
     }
 

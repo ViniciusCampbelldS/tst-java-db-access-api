@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record FuncionarioPatchRequest(
+        @jakarta.validation.constraints.Email @Size(max=254) String email,
         @Pattern(regexp = ".*\\S.*", message = "Informe o nome do funcionário.")
         @Size(max = 100, message = "O nome deve possuir no máximo 100 caracteres.")
         String nome,
@@ -23,7 +24,7 @@ public record FuncionarioPatchRequest(
         @Size(max = 40, message = "O setor deve possuir no máximo 40 caracteres.")
         String setor,
 
-        @Pattern(regexp = "ADM|field|tst", message = "As permissões devem ser ADM, field ou tst.")
+        @Pattern(regexp = "ADM|field|tst|rh|gerencia", message = "As permissões devem ser ADM, field ou tst.")
         String permissoes,
 
         @Pattern(regexp = "At|Af|In", message = "O status deve ser At, Af ou In.")

@@ -56,7 +56,7 @@ public class EpiService {
                 ? new Epi()
                 : buscar(form.getId());
 
-        epi.setCa(form.getCa().trim());
+        epi.setCa(form.getCa());
         epi.setLote(form.getLote().trim());
         epi.setNome(form.getNome().trim());
         epi.setVencimento(form.getVencimento());
@@ -71,7 +71,7 @@ public class EpiService {
         Epi epi = buscar(id);
 
         if (request.ca() != null) {
-            epi.setCa(request.ca().trim());
+            epi.setCa(request.ca());
         }
         if (request.lote() != null) {
             epi.setLote(request.lote().trim());

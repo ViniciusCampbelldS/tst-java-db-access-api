@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class ApiExceptionHandler {
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ProblemDetail integrity(){return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,"O registro possui referência ou valor já cadastrado.");}
     @ExceptionHandler(RegistroNaoEncontradoException.class)
     public ProblemDetail tratarNaoEncontrado(
             RegistroNaoEncontradoException exception

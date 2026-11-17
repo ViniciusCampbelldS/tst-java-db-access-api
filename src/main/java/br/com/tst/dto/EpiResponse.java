@@ -6,7 +6,7 @@ import java.util.List;
 
 public record EpiResponse(
         Long id,
-        String ca,
+        @jakarta.validation.constraints.NotNull Integer ca,
         String lote,
         String nome,
         LocalDate vencimento,

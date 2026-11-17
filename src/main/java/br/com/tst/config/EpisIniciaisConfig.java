@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDate;
 import java.util.List;
 
+@org.springframework.context.annotation.Profile("demo")
 @Configuration
 public class EpisIniciaisConfig {
 
@@ -17,7 +18,7 @@ public class EpisIniciaisConfig {
         return args -> {
             if (epiRepository.count() == 0) {
                 Epi epiCapacete = new Epi(
-                    "12345",
+                    12345,
                     "LOTE-CAP-2030",
                     "Capacete de segurança",
                     LocalDate.parse("2030-12-31"),
@@ -25,7 +26,7 @@ public class EpisIniciaisConfig {
                     List.of()
                 );
                 Epi epiOculos = new Epi(
-                    "67890",
+                    67890,
                     "LOTE-OC-2031",
                     "Óculos de proteção",
                     LocalDate.parse("2031-06-30"),

@@ -16,6 +16,10 @@ public interface EpiRepository extends JpaRepository<Epi, Long> {
     @EntityGraph(attributePaths = "funcionarios")
     List<Epi> findAll();
 
+    @Override
+    @EntityGraph(attributePaths = {"funcionarios"})
+    List<Epi> findAll(Sort sort);
+
     @Query("select distinct p from Epi p left join fetch p.funcionarios where p.id = :id")
     Optional<Epi> buscarComFuncionarios(@Param("id") Long id);
 

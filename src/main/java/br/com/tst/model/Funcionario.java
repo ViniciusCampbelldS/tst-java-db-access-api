@@ -25,12 +25,13 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "funcionarios")
-@Check(constraints = "status IN ('At', 'Af', 'In') AND permissoes IN ('ADM', 'field', 'tst')")
+@Check(constraints = "status IN ('At', 'Af', 'In') AND permissoes IN ('ADM', 'field', 'tst', 'rh', 'gerencia')")
 public class Funcionario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @jakarta.persistence.Version private Long versao;
 
     @NotBlank(message = "Informe o nome da funcionario.")
     @Size(max = 100, message = "O nome deve possuir no máximo 100 caracteres.")
@@ -54,7 +55,7 @@ public class Funcionario {
     private String setor;
 
     @NotBlank(message = "Informe as permissões do(a) funcionario.")
-    @Pattern(regexp = "ADM|field|tst", message = "As permissões devem ser ADM, field ou tst.")
+    @Pattern(regexp = "ADM|field|tst|rh|gerencia", message = "As permissões devem ser ADM, field ou tst.")
     @Column(nullable = false, length = 10)
     private String permissoes = "field";
 
@@ -63,19 +64,45 @@ public class Funcionario {
     @Column(nullable = false, length = 2)
     private String status = "At";
 
-    @NotNull(message = "Informe a lista de NRs.")
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-        name = "funcionarios_nrs",
-        joinColumns = @JoinColumn(name = "funcionario_id")
-    )
-    @Column(name = "nr", nullable = false, length = 250)
-    private List<@NotBlank(message = "Cada NR deve possuir um valor.")
-                  @Size(max = 250, message = "Cada NR deve possuir no máximo 250 caracteres.") String> nRs =
-        new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @jakarta.persistence.JoinTable(name="funcionarios_nrs", joinColumns=@JoinColumn(name="funcionario_id"), inverseJoinColumns=@JoinColumn(name="nr_id"))
+    private List<NR> normas = new ArrayList<>();
+    @Transient private List<String> nRs;
+    public List<NR> getNormas() { return normas; }
+    public void setNormas(List<NR> normas) { this.normas = normas; this.nRs = null; }
 
     @ManyToMany(mappedBy = "funcionarios")
     private List<Epi> epis = new ArrayList<>();
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String email;
+    public String getEmail() { return email; }
+    public void setEmail(String value) { email = value; }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String senhaHash;
+    public String getSenhaHash() { return senhaHash; }
+    public void setSenhaHash(String value) { senhaHash = value; }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String recuperacaoTokenHash;
+    public String getRecuperacaoTokenHash() { return recuperacaoTokenHash; }
+    public void setRecuperacaoTokenHash(String value) { recuperacaoTokenHash = value; }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private java.time.Instant recuperacaoExpiraEm;
+    public java.time.Instant getRecuperacaoExpiraEm() { return recuperacaoExpiraEm; }
+    public void setRecuperacaoExpiraEm(java.time.Instant value) { recuperacaoExpiraEm = value; }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String sessaoTokenHash;
+    public String getSessaoTokenHash() { return sessaoTokenHash; }
+    public void setSessaoTokenHash(String value) { sessaoTokenHash = value; }
+
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private java.time.Instant sessaoExpiraEm;
+    public java.time.Instant getSessaoExpiraEm() { return sessaoExpiraEm; }
+    public void setSessaoExpiraEm(java.time.Instant value) { sessaoExpiraEm = value; }
 
     public Funcionario() {
     }
@@ -144,7 +171,7 @@ public class Funcionario {
     }
 
     public List<String> getnRs() {
-        return nRs;
+        return nRs != null ? nRs : normas.stream().map(NR::getNome).toList();
     }
 
     public void setnRs(List<String> nRs) {
@@ -153,7 +180,7 @@ public class Funcionario {
 
     @Transient
     public String getnRsText() {
-        return String.join(", ", nRs);
+        return String.join(", ", getnRs());
     }
 
     public void setnRsText(String nRsText) {

@@ -55,8 +55,8 @@ public class NRIniciaisConfig {
     @Bean
     CommandLineRunner carregarNrs(NRRepository repository) {
         return args -> NRS_INICIAIS.stream()
-                .filter(nome -> !repository.existsByNome(nome))
-                .map(NR::new)
+                .filter(nome -> !repository.existsById(Long.valueOf(nome.substring(3, 5))))
+                .map(nome -> new NR(Long.valueOf(nome.substring(3, 5)), nome))
                 .forEach(repository::save);
     }
 }
