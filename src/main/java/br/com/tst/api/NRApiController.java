@@ -44,8 +44,10 @@ public class NRApiController {
     @Transactional
     public ResponseEntity<NRResponse> cadastrar(@Valid @RequestBody NRRequest request) {
         if (nrRepository.existsById(request.id())) throw new IllegalArgumentException("Número de NR já cadastrado.");
-        NR nr = nrRepository.save(new NR(request.id(), request.nome().trim()));
-        historico.registrar("NR", nr.getId(), "CRIACAO", null, Map.of("nome", nr.getNome()));
+        var novo = new NR(request.id(), request.nome().trim());
+        novo.setValidadeMeses(request.validadeMeses());
+        NR nr = nrRepository.save(novo);
+        historico.registrar("NR", nr.getId(), "CRIACAO", null, snap(nr));
         return ResponseEntity.created(URI.create("/nrs/" + nr.getId()))
                 .body(NRResponse.from(nr));
     }
@@ -58,10 +60,10 @@ public class NRApiController {
     ) {
         if (!id.equals(request.id())) throw new IllegalArgumentException("O número da NR não pode ser alterado.");
         NR nr = buscarNr(id);
-        var antes = Map.<String, Object>of("nome", nr.getNome());
-        nr.setNome(request.nome());
+        var antes = snap(nr);
+        nr.setNome(request.nome()); if (request.validadeMeses() != null) nr.setValidadeMeses(request.validadeMeses());
         var salvo = nrRepository.save(nr);
-        historico.registrar("NR", salvo.getId(), "EDICAO", antes, Map.of("nome", salvo.getNome()));
+        historico.registrar("NR", salvo.getId(), "EDICAO", antes, snap(salvo));
         return NRResponse.from(salvo);
     }
 
@@ -70,9 +72,16 @@ public class NRApiController {
     @Transactional
     public void excluir(@PathVariable Long id) {
         NR nr = buscarNr(id);
-        var antes = Map.<String, Object>of("nome", nr.getNome());
+        var antes = snap(nr);
         nrRepository.delete(nr);
         historico.registrar("NR", id, "EXCLUSAO", antes, null);
+    }
+
+    private static Map<String, Object> snap(NR nr) {
+        var m = new java.util.LinkedHashMap<String, Object>();
+        m.put("nome", nr.getNome());
+        m.put("validadeMeses", nr.getValidadeMeses());
+        return m;
     }
 
     private NR buscarNr(Long id) {
