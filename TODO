@@ -31,7 +31,7 @@ Este bloco registra a implementação mais recente e prevalece sobre os checklis
 - [ ] Aplicar a migração 004 no Supabase e validar os endpoints publicados após o deploy.
 - [ ] Relatórios reais e revisão visual final.
 
-Estrutura de entrega atual: entregas_epi(id,funcionario_id,data_entrega opcional apenas para legado sem data,criada_em,ficha_nome,ficha_tipo_conteudo,responsavel_id,origem_legado_id,origem_juncao); entrega_epi_itens(id,entrega_id,epi_id,encerrado_em,motivo_encerramento,encerrado_por_id,item_anterior_id), com unicidade de epi_id quando aberto. epis mantém os dados físicos e acrescenta descartado_em,data_descarte,motivo_descarte,responsavel_descarte_id. Chave/conteúdo do arquivo da ficha ainda pendente. entregas_epis e epi_funcionarios ficam preservadas, sem novas escritas.
+Estrutura de entrega atual: entregas_epi(id,funcionario_id,data_entrega opcional apenas para legado sem data,criada_em,ficha_nome,ficha_tipo_conteudo,responsavel_id,origem_legado_id,origem_juncao); entrega_epi_itens(id,entrega_id,epi_id,encerrado_em,motivo_encerramento,encerrado_por_id,item_anterior_id), com unicidade de epi_id quando aberto. epis mantém os dados físicos e acrescenta data_descarte (único indicador de descarte; descartado_em removido na migração 007),motivo_descarte,responsavel_descarte_id. Chave/conteúdo do arquivo da ficha ainda pendente. entregas_epis e epi_funcionarios foram removidas na migração 006. O histórico também registra criação/edição de NR (área NR). [implementado e validado]
 
 ## Etapas 1–2 implementadas — 16/11/2026
 

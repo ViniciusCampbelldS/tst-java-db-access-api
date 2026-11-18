@@ -48,9 +48,6 @@ public class Epi {
     @jakarta.persistence.Transient
     private List<Funcionario> funcionarios = new ArrayList<>();
 
-    private java.time.Instant descartadoEm;
-    public java.time.Instant getDescartadoEm(){return descartadoEm;}
-
     private java.time.LocalDate dataDescarte;
     public java.time.LocalDate getDataDescarte(){return dataDescarte;}
 

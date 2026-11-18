@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/historico")
 public class HistoricoController {
-    private static final Set<String> AREAS = Set.of("EPI", "TREINAMENTO", "TURMA");
+    private static final Set<String> AREAS = Set.of("EPI", "NR", "TREINAMENTO", "TURMA");
     private final HistoricoService service;
 
     public HistoricoController(HistoricoService service) {
