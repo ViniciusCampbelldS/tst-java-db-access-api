@@ -1,269 +1,65 @@
-# TODO consolidado — revisão de 16/11/2026
+# TODO — estado real do projeto (18/11/2026)
 
-## Cadastro, entregas e baixa de EPI — continuação de 16/11/2026
+Revisado contra o código e migrations de `main`. **[x] significa implementado no código; não garante que esteja implantado ou validado em produção.** O status de produção/Supabase precisa ser conferido separadamente.
 
-Este bloco registra a implementação mais recente e prevalece sobre os checklists históricos abaixo.
+## Implementado no backend
 
-- [x] Rota /epi/cadastro com criação separada da busca, API de lote e objetos físicos com IDs distintos.
-- [x] Autocomplete CA → nome com busca limitada, debounce/cancelamento, teclado e nome manual.
-- [x] Entrega real por funcionarioId e epiIds, listagem de cabeçalhos/itens e confirmação após resposta da API.
-- [x] Fonte de posse única: entregas_epi + entrega_epi_itens; migração002 reconcilia legados sem inventar datas/autores e torna as tabelas antigas somente leitura.
-- [x] Impedir dupla posse com transações, locks e índice único parcial por objeto aberto.
-- [x] Substituição fecha item anterior, registra vínculo com novo item e mantém substituido no objeto antigo.
-- [x] Descarte lógico registra data, motivo e responsável; fecha posse e bloqueia DELETE físico.
-- [x] Testes HTTP locais de lote, autocomplete, posse, concorrência, rollback, substituição, descarte e bloqueio por perfil; build Java24 e 5 testes de autenticação.
-- [x] Build Angular de produção e 6 testes em 2 specs. Correção complementar das larguras das sete colunas da tabela, com novo build aprovado.
-- [x] API publicada: 19 verificações HTTP aprovadas (401 sem sessão, ADMIN real, consulta de EPIs disponíveis/sugestões/entregas e logout com revogação). Navegador: cadastro, preenchimento por CA e consulta de entregas. Operações que alteram posse foram exercitadas apenas no PostgreSQL local descartável.
-- [x] Preparação Codex: AGENTS.md, CONTINUAR-NO-CODEX.md e PROMPT-CODEX.md nos dois repositórios.
-- [x] Migração002 aplicada ao Supabase; backend dc6c9a6 publicado no Render (dep-dbtrqe5bedkc73emtpr0, live) e frontend 2ba43c4 publicado na Vercel (dpl_B7zXFgfHeNLNQuhCYrnneBjMdU4J, READY). Contagens reconciliadas: 2 cabeçalhos/3 itens; legados 1 entrega/2 vínculos preservados; nenhuma posse duplicada.
-- [x] Ficha de entrega opcional em PDF (até 5 MB), persistida na mesma transação da entrega. Download autenticado para o funcionário titular, TST, ADMIN e Gerência.
-- [x] Validado em PostgreSQL descartável: migração 003, upload, listagem em nova sessão, download com bytes idênticos, bloqueio de acesso por outro funcionário e rejeição de arquivo inválido ou acima do limite. Build Angular, 16 testes Angular e 5 testes Java aprovados.
-- [x] Migração 003 aplicada ao Supabase antes do deploy da API; resta validar o fluxo de ficha na interface publicada.
-- [ ] Upload e download autorizado de imagens de relatos e documentos de treinamento.
-- [x] Histórico de alterações (GET /historico, ADM/TST/Gerência; operário não acessa). Tabela historico_alteracoes append-only (migrações 005 e 008), com autor vindo da sessão, area_do_site, registro_id, ação, antes/depois (JSON), filtros por área, registro, autor e período, e paginação.
-  - [x] Áreas e ações registradas: EPI (criação, edição, entrega, substituição, descarte), NR (criação, edição, exclusão, validade em meses), TURMA (criação, presença, documento: envio, alteração e exclusão), FUNCIONARIO (inativação no lugar de exclusão, mudança de status e reativação com observações de retorno) e regras de notificação de EPI e treinamento.
-  - [x] Comentários do histórico: lista imutável por evento (POST /historico/{id}/comentarios), cada comentário com texto e data/hora.
-  - [x] Eventos permanecem individuais por objeto; o agrupamento (mesma pessoa, mesmo CA e mesmo minuto na criação; mesmo CA e mesma pessoa na entrega) é feito na exibição do frontend.
-  - [ ] Frontend (projetofullstack2026): trocar getHistory() e as linhas estáticas por GET /historico, agrupar na exibição e incluir o botão de nota.
-  - [ ] Operário ver o próprio histórico.
-- [x] Treinamentos: a validade fica em nrs.validade_meses (ponto flutuante; 1 mês = 30,436875 dias). Turmas referenciam nrs por nr_id (sem tabela treinamentos); campos redundantes removidos. Turma guarda um documento opcional (PDF/PNG/JPEG até 5 MB) com PUT/GET/DELETE /treinamentos/turmas/{id}/documento. Presença calcula o vencimento pela validade da NR.
-- [x] Funcionário nunca é apagado: DELETE passa o status para In. Ao voltar de Af/In para At, o histórico traz as observações: NR-1 (afastamento acima de 180 dias: treinamento eventual), NR-7 (30 dias ou mais: ASO de retorno) e NR-10 (acima de 90 dias: reciclagem completa).
-- [x] Gestão persistida de treinamentos na página unificada: catálogo por NR, turmas com participantes por ID e presença persistida.
-- [x] Build Angular e testes existentes executados. Migração 004 validada em PostgreSQL descartável com criação de curso, turma, participante e presença.
-- [ ] Aplicar a migração 004 no Supabase e validar os endpoints publicados após o deploy.
-- [ ] Relatórios reais e revisão visual final.
+- [x] Autenticação por CPF/e-mail e senha BCrypt; token de sessão expirável e revogável; logout.
+- [x] Recuperação de senha com token temporário, uso único, hash e limitação de tentativas. Envio real de e-mail está desligado por padrão (`RECOVERY_EMAIL_ENABLED=false)); modo demonstrativo foi decisão anterior.
+- [x] Permissões no `SecurityConfig` para ADM, TST, RH, Gerência e funcionário/portal, por endpoint.
+- [x] CRUD de funcionários, PATCH/status e inativação em vez de exclusão física; NRs relacionadas por FK no modelo.
+- [x] CRUD de NR com ID manual, validade em meses e alteração/exclusão.
+- [x] CRUD de EPI, cadastro em lote, busca/autocomplete CA, filtros via API, objetos físicos com IDs próprios.
+- [x] Entregas, posse única, locks/transações, substituição e descarte; histórico de entregas preservado.
+- [x] Ficha de entrega PDF: upload na transação, limite de 5 MB e download autorizado.
+- [x] Portal API para EPIs/treinamentos do funcionário autenticado e criação de relato textual.
+- [x] Configuração de aviso de EPI por CA e treinamento por NR em tabelas e endpoints separados; padrão de 30 dias no portal.
+- [x] Turmas e presença persistidas; validade associada à NR; documento de turma PDF/PNG/JPEG (até 5 MB) com PUT/GET/DELETE.
+- [x] Histórico append-only, filtros e paginação na API, notas/comentários imutáveis.
+- [x] Auditoria implementada para EPI (criação/edição/entrega/substituição/descarte), NR, turma/presença/documento, notificações e status/inativação de funcionário.
+- [x] Migrations versionadas 001–012; `ddl-auto=validate`; RLS e REVOKE configurados nas migrations para acesso direto via Supabase Data API.
+- [x] Credenciais de bootstrap e SMTP configuradas por variáveis de ambiente; sem senha de administrador padrão embutida no código.
 
-Estrutura de entrega atual: entregas_epi(id,funcionario_id,data_entrega,criada_em,ficha_nome,ficha_tipo_conteudo,responsavel_id); entrega_epi_itens(id,entrega_id,epi_id,encerrado_em,motivo_encerramento,encerrado_por_id,item_anterior_id), com unicidade de epi_id quando aberto. epis mantém os dados físicos e data_descarte (único indicador de descarte), motivo_descarte e responsavel_descarte_id. Tabelas legadas entregas_epis e epi_funcionarios removidas.
+## Pendências reais
 
-## Etapas 1–2 implementadas — 16/11/2026
+### P0 — confirmar produção e integridade
+- [ ] Consultar o histórico de migrations no Supabase e confirmar quais de 004 a 012 foram aplicadas. Anotações anteriores indicavam 004 pendente; não assumir que as migrations posteriores estejam aplicadas.
+- [ ] Se houver migrations pendentes, revisar dados e pré-condições, backup e aplicá-las em ordem; confirmar estruturas e sequences depois.
+- [ ] Confirmar que o backend atualmente publicado corresponde ao `main` e validar endpoints pós-deploy. Merge no GitHub não equivale a deploy.
+- [ ] Executar smoke tests integrados em ambiente com backend e PostgreSQL reais/descartáveis, incluindo migração, login, permissões, entrega concorrente, substituição, descarte, presença, notificações, histórico e anexos.
+- [ ] Configurar CI: não há workflows/execuções do GitHub Actions observados nos repositórios nesta revisão.
 
-- [x] Migração transacional de CA inteiro, regras separadas, NR manual e associação por nr_id, preservando dados legados.
-- [x] Campos de e-mail fictício e credenciais na própria funcionarios, sem tabela usuarios.
-- [x] Login por CPF/e-mail, senha com BCrypt, sessão expirada/revogável e perfil vindo do banco.
-- [x] Matriz autorizada: TST EPI/NR/treinamentos; RH funcionários; ADMIN/Gerência tudo; Operário próprios dados/relatos.
-- [x] API e interface de definição de senha por ADMIN/Gerência, sem senha padrão no código.
-- [x] Recuperação DEMONSTRATIVA sem envio conforme decisão do usuário; mecanismo de token temporário/uso único verificado com e-mail simulado.
-- [x] Portal e identidade deixam de usar exemplos fixos; dados próprios e notificações são consultados pela sessão.
-- [x] Verificação Java 24, testes de autenticação, migração PostgreSQL local e build de produção Angular.
-- [ ] Concluir upload de anexos, histórico de treinamentos e consolidação dos modelos de entrega nas próximas etapas.
+### P1 — funcionalidade e auditoria
+- [ ] Completar auditoria de funcionário: registrar criação e alterações de dados (nome, CPF, e-mail, cargo, setor, permissões e NRs), não apenas status/inativação; não registrar hashes, senhas ou tokens.
+- [ ] Persistir anexos de imagens dos relatos de EPI; hoje o endpoint de relato aceita texto/situação, sem arquivo.
+- [ ] Testar e documentar autorização de cada endpoint e download com chamadas HTTP diretas, incluindo acesso a dados de outro funcionário.
+- [ ] Validar upload/download/delete de documento de treinamento e ficha de entrega em ambiente publicado, com teste de acesso negado.
+- [ ] Revisar RLS, grants e privilégios em todas as tabelas públicas após as migrations recentes. As migrations aplicam RLS/revogações, mas o estado atual da instância não foi consultado.
+- [ ] Validar recuperação real por e-mail (SMTP, remetente e URL de retorno) somente se o escopo deixar de ser demonstrativo; atualmente desativada por padrão.
 
-Detalhes, execução e limites em IMPLEMENTACAO-1-2.md no backend. A recuperação real por e-mail está fora do escopo por solicitação expressa do usuário.
+### P2 — consistência e manutenção
+- [ ] NR: impedir nomes/descrições duplicados (o controller verifica ID, mas não usa `existsByNome`; a constraint de nome único não foi confirmada).
+- [ ] Revisar o contrato de `funcionarios.nRs`: o DTO trafega nomes como strings, enquanto a relação persistida é FK para NR; decidir se o contrato atual é suficiente ou se deve passar IDs.
+- [ ] Revisar mensagens, validação, tratamento de erro, logs e UTF-8/acentuação.
+- [ ] Remover artefatos `target/` já versionados; `.gitignore` já os ignora, mas isso não remove arquivos rastreados.
+- [ ] Conferir a reconciliação dos dados legados e os casos sem data/autor; não inventar informação faltante.
+- [ ] Revisar desempenho de consultas (funcionários/EPIs e históricos), índices e limites/paginação.
 
-Status verificado por leitura do código nas revisões backend b4644751aa6c392aa853c86381ab028eff949fb9 e frontend af7db6dd55b42e1cca9678d1d5159a91089830dc. Não houve teste de execução nesta revisão. As estruturas do Supabase foram consultadas anteriormente. Este documento substitui as propostas anteriores de cas e de tabela única de notificações.
+## Migrations presentes no repositório
 
+- [x] 001 — contas, NRs/funcionários, notificações separadas, regras de integridade e segurança Data API.
+- [x] 002 — fonte canônica de entregas/itens e reconciliação de legado.
+- [x] 003 — fichas de entrega.
+- [x] 004 — turmas/presenças/documentos e sequences.
+- [x] 005 — histórico de alterações append-only.
+- [x] 006–007 — retirada de tabelas antigas e normalização do descarte.
+- [x] 008 — comentários de histórico.
+- [x] 009 — NR da turma por FK.
+- [x] 010–012 — limpeza de origem legado, validade na NR e remoção do catálogo de treinamento redundante.
+- [ ] Confirmar aplicação dessas migrations na instância de produção (checklist P0).
 
-## Implementações confirmadas — status das caixas
+## Observações
 
-Marcação de implementação por inspeção do código; testes integrados continuam pendentes.
-
-- [x] PATCH de funcionário implementado na API.
-- [x] Catálogo de NRs carregado pela API na gestão de funcionários, sem lista fixa nrOptions.
-- [x] Pesquisa de NR pela descrição implementada no frontend.
-- [x] Seleção de funcionários em entregas e treinamentos consulta a API.
-- [x] CRUD de EPI e cadastro em lote implementados na API; formulário atual chama POST /epis/bulk.
-- [x] Filtros locais de Busca EPI ligados aos campos da tela.
-- [x] Download de relatório e gerador XML implementados; validar arquivos e concluir formatos PDF/XLSX/ODF permanece pendente.
-
-## NR — arquivos já implementados
-
-- [x] Model: src/main/java/br/com/tst/model/NR.java.
-- [x] Repository: src/main/java/br/com/tst/repository/NRRepository.java.
-- [x] Request: src/main/java/br/com/tst/dto/NRRequest.java.
-- [x] Response: src/main/java/br/com/tst/dto/NRResponse.java.
-- [x] IniciaisConfig: src/main/java/br/com/tst/config/NRIniciaisConfig.java.
-- [x] ApiController: src/main/java/br/com/tst/api/NRApiController.java; GET lista/ID, POST, PUT e DELETE.
-- [ ] Garantir ID manual igual ao número da NR: retirar geração automática e adaptar Request, controller e carga inicial.
-- [ ] Reconciliar cadastro id=40 / NR 00 - Teste antes de migrar as referências.
-- [ ] Garantir unicidade do cadastro na API e banco, além da PK.
-- [ ] Alinhar funcionarios_nrs: banco já usa nr_id FK, mas Java ainda usa coleção de textos.
-
-## Notificações — decisão definitiva do usuário
-
-- [ ] Separar em dias_notificacao_epis: id PK gerado, ca INTEGER NOT NULL UNIQUE, dias_aviso INTEGER NOT NULL CHECK > 0.
-- [ ] Separar em dias_notificacao_treinamentos: id PK gerado, nr INTEGER NOT NULL UNIQUE FK nrs(id), dias_aviso INTEGER NOT NULL CHECK > 0. nr guarda a PK da NR; alinhar tipo com nrs.id antes da FK.
-- [ ] Remover is_norma e ca_ou_nr do contrato definitivo, tanto no banco quanto na API e Angular.
-- [ ] Não criar tabela cas. O ca da configuração não precisa de FK para epis.ca: vários objetos podem compartilhar o mesmo CA.
-- [ ] Aplicar a mesma antecedência a todos os objetos do mesmo CA, respeitando o vencimento individual.
-- [ ] Migrar as 25 regras de dias_notificacao_epi para as duas tabelas. Mapear as 21 regras textuais NR-xx para IDs reais; resolver NR-00 explicitamente, sem presumir que o ID é zero.
-- [ ] Atualizar entidades, repositórios, requests/responses, services, controllers e telas para os nomes ca/nr/diasAviso. O Java revisado ainda aponta para dias_notificacao, diferente da tabela real dias_notificacao_epi.
-- [ ] Definir comportamento padrão quando não existir configuração.
-- [ ] Remover tabela antiga somente depois de validar migração e atualizar consumidores.
-
-## Exportar arquivos — parcial
-
-- [x] Botões de exportação de EPI e download local implementados.
-- [x] Gerador de XML estruturado implementado em busca-epi.ts; validar abertura/conteúdo antes de considerar concluído.
-- [ ] Gerar PDF verdadeiro: atualmente é texto simples salvo com extensão .pdf.
-- [ ] Gerar XLSX verdadeiro: atualmente é texto simples salvo com extensão .xlsx.
-- [ ] Gerar ODF no formato escolhido: atualmente é texto simples salvo com extensão .odf.
-- [ ] Usar MIME types corretos; respeitar filtros, cabeçalhos, datas e acentos.
-- [ ] Verificar arquivo abrindo em leitor PDF e aplicativo de planilha.
-- [ ] Definir e implementar exportações equivalentes para funcionários/treinamentos conforme necessidade.
-
-## Padronizar frontend de criação — pendente
-
-- [ ] Usar o mesmo padrão nos cadastros EPI, treinamento e funcionário: cabeçalho, largura, espaçamento, campos, ações Salvar/Cancelar, obrigatoriedade, validações e mensagens.
-- [ ] Separar claramente filtros de busca e campos de criação: o formulário de EPI atual mistura os dois.
-- [ ] Uniformizar comportamento de abertura/fechamento e confirmação entre criação e edição.
-- [ ] Garantir estados de carregamento, falha e sucesso e responsividade.
-- [ ] Conferir visualmente as três telas após implementação. A revisão atual é apenas do código; classes comuns existentes não comprovam padronização completa.
-
-## Cargo e setor sem opções fixas — pendente
-
-- [ ] Remover arrays readonly cargos e setores de gerenciar-funcionarios.ts.
-- [ ] Permitir digitar novo cargo/setor no cadastro e edição.
-- [ ] Sugerir valores já cadastrados, sem restringir a seleção à lista.
-- [ ] Alimentar os filtros com valores reais dos funcionários, sem lista fixa.
-- [ ] Começar campos vazios: Ex.: Compras e Ex.: Metalúrgico I devem ser placeholders, não valores enviados ao banco.
-- [ ] Manter limites do backend (40 caracteres) e normalizar espaços.
-
-## Autocomplete de CA — pendente
-
-- [ ] Ao digitar CA, buscar CAs/nome dos EPIs cadastrados; sugerir correspondências parciais sem repetir CA/nome por objeto físico.
-- [ ] Ao selecionar sugestão, preencher CA e nome automaticamente; manter IDs dos objetos independentes.
-- [ ] Permitir nome manual se não houver resultado.
-- [ ] Implementar busca limitada no backend e debounce/cancelamento no Angular; seleção por teclado, carregamento e mensagens de erro/vazio.
-
-## Entregas e objetos físicos — pendente
-
-- [ ] Cada epis.id representa um objeto; manter substituido no EPI. Não permitir dois funcionários simultâneos.
-- [ ] Adotar entregas_epi + entrega_epi_itens como fonte oficial. Migrar o registro de entregas_epis e reconciliar os 2 vínculos epi_funcionarios antes de retirar estruturas redundantes.
-- [ ] Acrescentar responsável e chave do arquivo da ficha ao cabeçalho; hoje há nome/tipo, sem caminho ou conteúdo.
-- [ ] Acrescentar encerramento/motivo e item anterior aos itens; índice único parcial em epi_id para entregas abertas.
-- [ ] Salvar entrega, substituição e descarte em transações; confirmar sucesso na tela somente após retorno da API.
-- [ ] Selecionar funcionario.id e epi.id reais; remover catálogos e entregas mockados.
-- [ ] Bloquear entrega de objeto já entregue, descartado ou substituído.
-- [ ] Não inventar datas/responsáveis ausentes nos registros legados.
-
-## Estrutura final das demais tabelas
-
-| Tabela | Estrutura / ajuste |
-| --- | --- |
-| funcionarios | Manter id,nome,cpf,cargo,setor,permissoes,status; acrescentar email único normalizado,senha_hash,recuperacao_token_hash e recuperacao_expira_em opcionais; auditar UNIQUE(cpf). Cadastro, perfil e login ficam nesta tabela. |
-| nrs | id numérico manual como número da NR; nome. |
-| funcionarios_nrs | Manter id,funcionario_id FK,nr_id FK obrigatório; UNIQUE(funcionario_id,nr_id). |
-| epis | id por objeto; ca INTEGER obrigatório, sem UNIQUE nem FK de CA; nome,lote,vencimento,substituido; acrescentar descarte e motivo opcionais. |
-| entregas_epi | id,funcionario_id FK,data_entrega,criada_em,ficha_nome,ficha_tipo_conteudo; acrescentar responsável FK e chave de arquivo. |
-| entrega_epi_itens | id,entrega_id FK,epi_id FK; UNIQUE(entrega_id,epi_id); acrescentar encerramento/motivo,item_anterior_id opcional FK e unicidade de objeto em entrega aberta. |
-| dias_notificacao_epis | id PK,ca INTEGER UNIQUE obrigatório,dias_aviso INTEGER positivo obrigatório. |
-| dias_notificacao_treinamentos | id PK,nr INTEGER UNIQUE obrigatório FK nrs.id,dias_aviso INTEGER positivo obrigatório. |
-| treinamentos | id,nome,nr_id FK,validade_meses positiva; migrar dados individuais para turma/participação antes de retirar colunas antigas. |
-| turmas_treinamento | Manter id,data,horario,nome e dados de documento; acrescentar treinamento_id FK, substituir nr textual pelo relacionamento e manter vencimento padrão se necessário. Preservar documento_conteudo BYTEA ao migrar anexos. |
-| presencas_treinamento | Manter id,turma_id FK,funcionario_id FK,presente,atualizado_em e UNIQUE existente; acrescentar conclusão e vencimento individuais. |
-| relatos_epi | Manter id,situacao,comentario,criado_em; ligar ao item da entrega para registrar posse; migrar anexos além de nomes_arquivos. |
-| documentos (proposta) | id,nome_original,chave_arquivo,mime_type,tamanho_bytes,enviado_por FK,criado_em e vínculo com entrega/turma/relato. |
-| historico_alteracoes (proposta) | id,autor_id FK opcional,data,entidade,registro_id,acao,antes/depois JSONB. |
-
-Não criar tabela usuarios nem separar perfil/login de funcionarios.
-
-Tabelas a retirar apenas após migração validada: entregas_epis, epi_funcionarios e dias_notificacao_epi. Não criar cas.
-
-## Demais integrações e correções
-
-- [ ] Conectar treinamentos, turmas, presenças, relatos, históricos, portal e dashboard aos dados reais; reaproveitar tabelas existentes no Supabase.
-- [ ] Implementar upload persistido e associação de documentos.
-- [ ] Implementar autenticação e autorização no backend; retirar login fixo e perfil simulado.
-- [ ] Corrigir rota /epi/cadastro e conferir rotas de treinamento.
-- [ ] Corrigir fetch dos funcionários em EpiRepository.findAll(Sort) e limite transacional de conversão para DTO.
-- [ ] Remover EpiService duplicado em epi-status.ts.
-- [ ] Remover senha padrão do application.properties e trocar credencial exposta.
-- [ ] Criar migrações versionadas, conferir dados não numéricos e não depender de ddl-auto=update.
-- [ ] Revisar RLS/privilégios da Data API: as 13 tabelas públicas estavam sem RLS na inspeção anterior.
-- [ ] Verificar persistência após recarga, migração das regras, CA compartilhado, CA/NR de mesmo número, concorrência de entrega, substituição e exportações reais.
-
-
-
-## Complemento da revisão — recuperação de senha, páginas e permissões
-
-Revisão estática de 16/11/2026. Os itens abaixo distinguem interface implementada de persistência real; nenhuma tela foi executada nesta conferência.
-
-### Recuperação de senha e login na própria tabela funcionarios — novo requisito
-
-- [ ] Acrescentar email ao Funcionario, DTOs e formulários de cadastro/edição; validar formato e normalizar para impedir contas com e-mails equivalentes.
-- [ ] Migrar o banco com email único sem diferenciar maiúsculas/minúsculas; reconciliar/preencher funcionários existentes antes de exigir email obrigatório para contas com login.
-- [ ] Manter cadastro, perfil e credenciais na própria tabela funcionarios. Não criar usuarios nem tabela separada de perfil/login.
-- [ ] Acrescentar senha_hash em funcionarios; nunca retornar hash ou credenciais nos responses de funcionário.
-- [ ] Implementar Esqueci minha senha e Redefinir senha, com envio de link ao e-mail cadastrado.
-- [ ] Para este projeto, guardar em funcionarios os campos de recuperação: recuperacao_token_hash e recuperacao_expira_em, ambos opcionais. Guardar somente o hash do token; tornar token temporário e de uso único, invalidando-o após redefinição.
-- [ ] Limitar tentativas de recuperação e responder de forma genérica independentemente de o e-mail existir.
-- [ ] Configurar provedor/SMTP e URL de retorno por ambiente; validar nova senha, gravar hash e invalidar sessões antigas após redefinição.
-- [ ] Retirar login/token fixos; a autenticação deve identificar o próprio funcionarios.id e suas permissões.
-
-### Históricos de EPI e treinamento — já previstos; detalhamento
-
-- [ ] Histórico EPI: substituir EpiService.getHistory(), que retorna exemplos fixos, por consulta à API.
-- [ ] Histórico treinamento: substituir as linhas estáticas do HTML por registros persistidos.
-- [ ] Registrar criação, edição, entrega/substituição/descarte e alterações de treinamento/presença/anexos, conforme a operação; autor derivado da autenticação, timestamp e valores alterados.
-- [ ] Gravar a auditoria junto com a operação, permitir filtro/paginação e impedir alteração do histórico por ações comuns.
-- [ ] Não registrar senha, hash de senha ou tokens nos dados de auditoria.
-
-### Cadastro/Recebimento e Busca EPI — correção de status
-
-- [x] Cadastro de EPI já possui salvarEpi() chamando EpiService.cadastrarEmLote() e tratamento de resposta/erro. Não marcar como ausência total de API.
-- [x] Busca EPI já possui aplicarFiltros(), ligado ao ngModelChange para nome, CA, validade, funcionário, situação e inclusão de substituídos.
-- [ ] Corrigir o acesso à página Cadastro/Recebimento: há referência a /epi/cadastro, mas falta rota correspondente; separar ou organizar claramente o modo de cadastro e busca.
-- [ ] Testar POST /epis/bulk com backend ligado: quantidade N deve gerar N objetos físicos; conferir salvamento, datas e permanência após recarga.
-- [ ] Testar filtros em dados reais e corrigir divergências de datas/status; lote não participa do predicado atual, definir se deve ser filtro.
-- [ ] Retirar fallback de dados fictícios que pode mascarar falha da API.
-
-### Meus EPIs e portal autenticado — não falta apenas upload
-
-- [x] Interface de Meus EPIs, seleção local de imagens e geração demonstrativa de ficha existem.
-- [ ] Substituir getEmployeeEpis() fixo pela consulta dos objetos vinculados ao funcionário autenticado.
-- [ ] Salvar relatos na API: atualmente submitReport() grava no localStorage, sem persistência compartilhada.
-- [ ] Implementar upload real de imagens/documentos, associação ao relato/entrega, validação de tamanho/tipo e consulta/download autorizado.
-- [ ] Substituir fichas demonstrativas por documentos reais da entrega.
-- [ ] Fazer Meus Treinamentos usar participações do funcionário autenticado.
-- [ ] Remover mocks/localStorage usados como fonte de dados de negócio; não confundir isso com armazenamento necessário à sessão.
-- [ ] Backend deve determinar identidade a partir da sessão/token, sem confiar no funcionario_id enviado pelo cliente.
-
-### Treinamentos em uma página — mudança de escopo
-
-- [x] Fluxo de criar treinamento, abrir turma e confirmar presença concentrado na página de gestão de treinamentos.
-- [x] Rotas antigas de editar/presença redirecionam para a página unificada; não há views separadas expostas.
-- [x] A persistência de turmas, participantes e presença reaproveita as tabelas existentes.
-- [x] Seleção de funcionários já consulta GET /funcionarios.
-- [x] Novo treinamento e edição usam a API e preservam alterações após recarga.
-- [x] Filtros de treinamento estão vinculados à listagem carregada da API.
-- [x] Visualizar abre os participantes e permite confirmar presença persistida.
-- [x] Criação de turma e presença estão integradas ao fluxo unificado; anexos de treinamento seguem pendentes.
-- [x] Seleção de funcionários existentes usa IDs retornados pela API.
-
-### Relatórios/exportação — já previsto; validar conclusão
-
-- [ ] Concluir PDF/XLSX/ODF verdadeiros; botões existentes geram texto simples com extensão desses formatos.
-- [x] XML possui gerador estruturado; não tratar como inexistente.
-- [ ] Validar XML, conteúdo/filtros, MIME type, acentuação e abertura em aplicação externa; validar também os demais formatos.
-
-### Permissões TST/RH/Gerência e funcionário — detalhamento necessário
-
-- [ ] Definir matriz de ações por perfil (visualizar, criar, editar, excluir/descartar, exportar e administrar funcionários).
-- [ ] Acrescentar RH/Gerência aos contratos, validações e constraints do banco. Hoje há ADM/field/tst no backend e TST/Funcionário no frontend; documentar equivalências sem inventar permissões.
-- [x] Há bloqueios parciais no frontend: tstGuard e botões de EPI desabilitados conforme perfil.
-- [ ] Completar visibilidade/estado desabilitado, mensagens e proteção de rotas para a matriz completa, usando perfil vindo da autenticação, sem permitir autoatribuição no navegador.
-- [ ] Aplicar autorização em cada endpoint do backend e nas consultas/arquivos; frontend sozinho não protege dados.
-- [ ] Testar negação real com chamadas HTTP diretas e acesso a registros de outro funcionário.
-
-### Qualidade e teste integrado — itens existentes, agora explícitos
-
-- [ ] Revisar arquivos como UTF-8, acentos e textos com codificação quebrada; revisar também nomes e legendas dos fluxos unificados.
-- [ ] Padronizar carregamento, vazio, erro, sucesso e opção de tentar novamente nas listas, formulários, upload e exportação.
-- [ ] Validar responsividade de todas as páginas, tabelas, modais, filtros e seletores, incluindo uso por teclado.
-- [ ] Testar com backend ligado: login, recuperação de senha por e-mail, cadastro, edição, filtros, persistência após recarga, entrega, presença, upload, históricos, relatórios e permissões.
-- [ ] Testar link de recuperação inválido/expirado/reutilizado, e-mail desconhecido e invalidação das sessões.
-
-## Checklist anterior para referência
-
-O status consolidado acima prevalece sobre as marcações históricas abaixo.
-
-[x] NR:
-    [x] Model,
-    [x] Repository,
-    [x] Request,
-    [x] Response,
-    [x] IniciaisConfig,
-    [x] ApiController;
-
-
-[ ] Conseguir criar um novo Epi pelo site:
-    [ ] Formato da data
+- A recuperação por e-mail está intencionalmente demonstrativa por decisão anterior; não contar como bug enquanto o escopo permanecer assim.
+- Não criar tabela `usuarios`, tabela `cas` nem voltar a usar as tabelas de entrega/notificação legadas.
+- O frontend tem seu backlog próprio em `TTTODO.md` no repositório `projetofullstack2026`.
