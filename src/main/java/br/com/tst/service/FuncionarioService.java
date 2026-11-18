@@ -23,6 +23,12 @@ public class FuncionarioService {
     @org.springframework.beans.factory.annotation.Autowired private br.com.tst.repository.NRRepository nrRepository;
     private final EpiRepository epiRepository;
     @org.springframework.beans.factory.annotation.Autowired private HistoricoService historico;
+    @org.springframework.beans.factory.annotation.Autowired private org.springframework.jdbc.core.JdbcTemplate jdbc;
+
+    private static final List<String> OBSERVACOES_RETORNO = List.of(
+            "NR-1: afastamento superior a 180 dias - realizar treinamento eventual antes de retomar a atividade das respectivas NRs.",
+            "NR-7: afastamento de 30 dias ou mais - realizar Exame Médico de Retorno ao Trabalho (ASO) antes de reassumir a função.",
+            "NR-10: afastamento superior a 3 meses (90 dias) - realizar treinamento de reciclagem completo.");
 
     // Construtor
     public FuncionarioService(
@@ -77,8 +83,18 @@ public class FuncionarioService {
 
         if (funcionario.getEmail() != null) funcionario.setEmail(funcionario.getEmail().trim().toLowerCase(java.util.Locale.ROOT));
         funcionario.setNormas(funcionario.getnRs().stream().distinct().map(nome -> nrRepository.findByNome(nome).orElseThrow(() -> new IllegalArgumentException("NR não cadastrada: " + nome))).toList());
-        // Persiste no banco.
-        return funcionarioRepository.save(funcionario);
+        var anterior = funcionario.getId() == null ? List.<String>of()
+                : jdbc.queryForList("select status from funcionarios where id=?", String.class, funcionario.getId());
+        var salvo = funcionarioRepository.save(funcionario);
+        if (!anterior.isEmpty() && !anterior.getFirst().equals(salvo.getStatus())) {
+            boolean retorno = "At".equals(salvo.getStatus());
+            var depois = new java.util.LinkedHashMap<String, Object>();
+            depois.put("status", salvo.getStatus());
+            if (retorno) depois.put("observacoes", OBSERVACOES_RETORNO);
+            historico.registrar("FUNCIONARIO", salvo.getId(), retorno ? "REATIVACAO" : "MUDANCA_STATUS",
+                    java.util.Map.of("status", anterior.getFirst()), depois);
+        }
+        return salvo;
     }
 
     /**
