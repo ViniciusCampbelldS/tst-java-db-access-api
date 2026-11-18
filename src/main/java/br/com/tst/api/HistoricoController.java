@@ -31,20 +31,19 @@ public class HistoricoController {
                                           @RequestParam(required = false) Long autorId,
                                           @RequestParam(required = false) LocalDate de,
                                           @RequestParam(required = false) LocalDate ate,
-                                          @RequestParam(defaultValue = "false") boolean agrupar,
-                                          @RequestParam(defaultValue = "0") int pagina,
+                                         @RequestParam(defaultValue = "0") int pagina,
                                           @RequestParam(defaultValue = "20") int tamanho) {
         if (areaDoSite != null && !areaDoSite.isBlank() && !AREAS.contains(areaDoSite.toUpperCase())) {
             throw new IllegalArgumentException("Área do site inválida.");
         }
-        return service.listar(areaDoSite == null || areaDoSite.isBlank() ? null : areaDoSite.toUpperCase(), registroId, autorId, de, ate, agrupar, pagina, tamanho);
+        return service.listar(areaDoSite == null || areaDoSite.isBlank() ? null : areaDoSite.toUpperCase(), registroId, autorId, de, ate, pagina, tamanho);
     }
 
     public record ComentarioRequest(@NotBlank @Size(max = 1000) String texto) {}
 
     /** Acrescenta uma nota ao evento e devolve todas as notas dele. */
     @PostMapping("/{id}/comentarios")
-    public List<String> comentar(@PathVariable long id, @Valid @RequestBody ComentarioRequest request) {
+    public List<HistoricoService.Comentario> comentar(@PathVariable long id, @Valid @RequestBody ComentarioRequest request) {
         return service.comentar(id, request.texto());
     }
 }
