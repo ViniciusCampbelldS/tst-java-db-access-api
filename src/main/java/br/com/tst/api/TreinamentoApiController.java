@@ -91,8 +91,8 @@ public class TreinamentoApiController {
             throw new IllegalArgumentException("Treinamento não cadastrado.");
         }
         var turma=jdbc.queryForMap("""
-            insert into turmas_treinamento(treinamento_id,data,horario,nome,nr)
-            select c.id,?,?,c.nome,concat('NR-', lpad(c.nr_id::text,2,'0'))
+            insert into turmas_treinamento(treinamento_id,nr_id,data,horario,nome)
+            select c.id,c.nr_id,?,?,c.nome
             from treinamentos c where c.id=?
             returning id,treinamento_id as \"treinamentoId\",data,horario
             """,request.data(),request.horario(),request.treinamentoId());
