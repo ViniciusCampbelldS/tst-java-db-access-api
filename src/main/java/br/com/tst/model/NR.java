@@ -21,6 +21,9 @@ public class NR {
     @Column(nullable = false, length = 250)
     private String nome;
 
+    @Column(name = "validade_meses")
+    private Double validadeMeses;
+
     public NR() {
     }
 
@@ -35,6 +38,14 @@ public class NR {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Double getValidadeMeses() {
+        return validadeMeses;
+    }
+
+    public void setValidadeMeses(Double validadeMeses) {
+        this.validadeMeses = validadeMeses;
     }
 
     public String getNome() {

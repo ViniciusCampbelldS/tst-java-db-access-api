@@ -21,7 +21,7 @@ new=call('/epis/'+str(ids[2]),token=token)[1];assert new['funcionarios'][0]['id'
 assert call('/entregas-epis','POST',{'funcionarioId':2,'dataEntrega':today,'epiIds':[ids[3],ids[2]]},token)[0]==409
 assert not call('/epis/'+str(ids[3]),token=token)[1]['funcionarios']
 assert call('/epis/'+str(ids[2])+'/descarte','POST',{'motivo':'Teste descarte','data':today},token)[0]==200
-discard=call('/epis/'+str(ids[2]),token=token)[1];assert discard['descartadoEm'] and discard['motivoDescarte']=='Teste descarte'and discard['responsavelDescarteId']==1 and not discard['funcionarios']
+discard=call('/epis/'+str(ids[2]),token=token)[1];assert discard['dataDescarte'] and discard['motivoDescarte']=='Teste descarte'and discard['responsavelDescarteId']==1 and not discard['funcionarios']
 assert call('/epis/'+str(ids[2])+'/descarte','POST',{'motivo':'De novo','data':today},token)[0]==409
 assert call('/epis/'+str(ids[2]),'DELETE',None,token)[0]==405
 # Concurrent deliveries of one object cannot both win.

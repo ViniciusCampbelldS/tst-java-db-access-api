@@ -20,13 +20,20 @@ Este bloco registra a implementação mais recente e prevalece sobre os checklis
 - [x] Validado em PostgreSQL descartável: migração 003, upload, listagem em nova sessão, download com bytes idênticos, bloqueio de acesso por outro funcionário e rejeição de arquivo inválido ou acima do limite. Build Angular, 16 testes Angular e 5 testes Java aprovados.
 - [x] Migração 003 aplicada ao Supabase antes do deploy da API; resta validar o fluxo de ficha na interface publicada.
 - [ ] Upload e download autorizado de imagens de relatos e documentos de treinamento.
-- [ ] Histórico completo de edições de EPI e treinamento; os eventos de posse não cobrem todas as alterações.
+- [x] Histórico de alterações (GET /historico, ADM/TST/Gerência; operário não acessa). Tabela historico_alteracoes append-only (migrações 005 e 008), com autor vindo da sessão, area_do_site, registro_id, ação, antes/depois (JSON), filtros por área, registro, autor e período, e paginação.
+  - [x] Áreas e ações registradas: EPI (criação, edição, entrega, substituição, descarte), NR (criação, edição, exclusão, validade em meses), TURMA (criação, presença, documento: envio, alteração e exclusão), FUNCIONARIO (inativação no lugar de exclusão, mudança de status e reativação com observações de retorno) e regras de notificação de EPI e treinamento.
+  - [x] Comentários do histórico: lista imutável por evento (POST /historico/{id}/comentarios), cada comentário com texto e data/hora.
+  - [x] Eventos permanecem individuais por objeto; o agrupamento (mesma pessoa, mesmo CA e mesmo minuto na criação; mesmo CA e mesma pessoa na entrega) é feito na exibição do frontend.
+  - [ ] Frontend (projetofullstack2026): trocar getHistory() e as linhas estáticas por GET /historico, agrupar na exibição e incluir o botão de nota.
+  - [ ] Operário ver o próprio histórico.
+- [x] Treinamentos: a validade fica em nrs.validade_meses (ponto flutuante; 1 mês = 30,436875 dias). Turmas referenciam nrs por nr_id (sem tabela treinamentos); campos redundantes removidos. Turma guarda um documento opcional (PDF/PNG/JPEG até 5 MB) com PUT/GET/DELETE /treinamentos/turmas/{id}/documento. Presença calcula o vencimento pela validade da NR.
+- [x] Funcionário nunca é apagado: DELETE passa o status para In. Ao voltar de Af/In para At, o histórico traz as observações: NR-1 (afastamento acima de 180 dias: treinamento eventual), NR-7 (30 dias ou mais: ASO de retorno) e NR-10 (acima de 90 dias: reciclagem completa).
 - [x] Gestão persistida de treinamentos na página unificada: catálogo por NR, turmas com participantes por ID e presença persistida.
 - [x] Build Angular e testes existentes executados. Migração 004 validada em PostgreSQL descartável com criação de curso, turma, participante e presença.
 - [ ] Aplicar a migração 004 no Supabase e validar os endpoints publicados após o deploy.
 - [ ] Relatórios reais e revisão visual final.
 
-Estrutura de entrega atual: entregas_epi(id,funcionario_id,data_entrega opcional apenas para legado sem data,criada_em,ficha_nome,ficha_tipo_conteudo,responsavel_id,origem_legado_id,origem_juncao); entrega_epi_itens(id,entrega_id,epi_id,encerrado_em,motivo_encerramento,encerrado_por_id,item_anterior_id), com unicidade de epi_id quando aberto. epis mantém os dados físicos e acrescenta descartado_em,data_descarte,motivo_descarte,responsavel_descarte_id. Chave/conteúdo do arquivo da ficha ainda pendente. entregas_epis e epi_funcionarios ficam preservadas, sem novas escritas.
+Estrutura de entrega atual: entregas_epi(id,funcionario_id,data_entrega,criada_em,ficha_nome,ficha_tipo_conteudo,responsavel_id); entrega_epi_itens(id,entrega_id,epi_id,encerrado_em,motivo_encerramento,encerrado_por_id,item_anterior_id), com unicidade de epi_id quando aberto. epis mantém os dados físicos e data_descarte (único indicador de descarte), motivo_descarte e responsavel_descarte_id. Tabelas legadas entregas_epis e epi_funcionarios removidas.
 
 ## Etapas 1–2 implementadas — 16/11/2026
 
