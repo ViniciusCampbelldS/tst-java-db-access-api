@@ -22,6 +22,7 @@ public class FuncionarioService {
     // que ainda possuem EPIs vinculados.
     @org.springframework.beans.factory.annotation.Autowired private br.com.tst.repository.NRRepository nrRepository;
     private final EpiRepository epiRepository;
+    @org.springframework.beans.factory.annotation.Autowired private HistoricoService historico;
 
     // Construtor
     public FuncionarioService(
@@ -123,7 +124,13 @@ public class FuncionarioService {
         // Garante que o funcionário realmente existe.
         buscar(id);
 
-        // Remove o registro.
-        funcionarioRepository.deleteById(id);
+        // Funcionários nunca são apagados: o ID permanece e o status passa a Inativo.
+        var funcionario = buscar(id);
+        var antes = funcionario.getStatus();
+        if (!"In".equals(antes)) {
+            funcionario.setStatus("In");
+            funcionarioRepository.save(funcionario);
+            historico.registrar("FUNCIONARIO", id, "INATIVACAO", java.util.Map.of("status", antes), java.util.Map.of("status", "In"));
+        }
     }
 }

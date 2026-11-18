@@ -27,6 +27,7 @@ public class SecurityConfig {
  .requestMatchers(HttpMethod.GET,"/entregas-epis/**","/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**","/treinamentos/**").hasAnyRole("ADM","tst","rh","gerencia")
  .requestMatchers("/entregas-epis/**","/epis/**","/nrs/**","/dias-notificacao-epis/**","/dias-notificacao-treinamentos/**","/treinamentos/**").hasAnyRole("ADM","tst","gerencia")
  .requestMatchers(HttpMethod.GET,"/historico").hasAnyRole("ADM","tst","gerencia")
+ .requestMatchers(HttpMethod.POST,"/historico/*/comentarios").hasAnyRole("ADM","tst","gerencia")
  .anyRequest().denyAll())
  .addFilterBefore(new SessionFilter(repository),UsernamePasswordAuthenticationFilter.class).build();
  }

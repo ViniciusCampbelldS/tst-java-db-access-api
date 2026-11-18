@@ -67,8 +67,12 @@ public class NRApiController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
     public void excluir(@PathVariable Long id) {
-        nrRepository.delete(buscarNr(id));
+        NR nr = buscarNr(id);
+        var antes = Map.<String, Object>of("nome", nr.getNome());
+        nrRepository.delete(nr);
+        historico.registrar("NR", id, "EXCLUSAO", antes, null);
     }
 
     private NR buscarNr(Long id) {
