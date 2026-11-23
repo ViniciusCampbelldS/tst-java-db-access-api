@@ -138,6 +138,10 @@ class EventosHistoricoIntegrationTest {
         var pdf = new MockMultipartFile("arquivo", "lista.pdf", "application/pdf", "%PDF-1.4 exemplo".getBytes());
         mvc.perform(multipart("/treinamentos/turmas/" + turma + "/documento").file(pdf).with(r -> { r.setMethod("PUT"); return r; })
                 .header("Authorization", "Bearer " + adm)).andExpect(status().isOk());
+        mvc.perform(get("/treinamentos/turmas").header("Authorization", "Bearer " + adm))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + turma + ")].documentoNome").value(org.hamcrest.Matchers.hasItem("lista.pdf")));
+        mvc.perform(get("/treinamentos/turmas/" + turma + "/documento")).andExpect(status().isUnauthorized());
         var novo = new MockMultipartFile("arquivo", "lista-v2.pdf", "application/pdf", "%PDF-1.4 exemplo v2".getBytes());
         mvc.perform(multipart("/treinamentos/turmas/" + turma + "/documento").file(novo).with(r -> { r.setMethod("PUT"); return r; })
                 .header("Authorization", "Bearer " + adm)).andExpect(status().isOk());
@@ -148,6 +152,10 @@ class EventosHistoricoIntegrationTest {
                 .with(r -> { r.setMethod("PUT"); return r; }).header("Authorization", "Bearer " + adm)).andExpect(status().isConflict());
         mvc.perform(delete("/treinamentos/turmas/" + turma + "/documento").header("Authorization", "Bearer " + adm)).andExpect(status().isNoContent());
         mvc.perform(get("/treinamentos/turmas/" + turma + "/documento").header("Authorization", "Bearer " + adm)).andExpect(status().isNotFound());
+
+        mvc.perform(get("/treinamentos/turmas").header("Authorization", "Bearer " + adm))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.id == " + turma + ")].documentoNome").value(org.hamcrest.Matchers.contains(org.hamcrest.Matchers.nullValue())));
 
         var eventos = historico(adm, "TURMA", turma);
         assertEquals("DOCUMENTO_EXCLUSAO", eventos.get(0).get("acao").asText());
