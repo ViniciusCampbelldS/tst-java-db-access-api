@@ -27,7 +27,7 @@ Revisado contra o código e migrations de `main`. **[x] significa implementado n
 - [ ] Se houver migrations pendentes, revisar dados e pré-condições, backup e aplicá-las em ordem; confirmar estruturas e sequences depois.
 - [ ] Confirmar que o backend atualmente publicado corresponde ao `main` e validar endpoints pós-deploy. Merge no GitHub não equivale a deploy.
 - [ ] Executar smoke tests integrados em ambiente com backend e PostgreSQL reais/descartáveis, incluindo migração, login, permissões, entrega concorrente, substituição, descarte, presença, notificações, histórico e anexos.
-- [ ] Configurar CI: não há workflows/execuções do GitHub Actions observados nos repositórios nesta revisão.
+- [x] Configurar CI do backend para executar a suíte Maven com H2 em memória. A suíte passou localmente com Java 24 (13 testes). A primeira execução no GitHub ainda precisa ser confirmada.
 
 ### P1 — funcionalidade e auditoria
 - [ ] Completar auditoria de funcionário: registrar criação e alterações de dados (nome, CPF, e-mail, cargo, setor, permissões e NRs), não apenas status/inativação; não registrar hashes, senhas ou tokens.
@@ -41,7 +41,7 @@ Revisado contra o código e migrations de `main`. **[x] significa implementado n
 - [ ] NR: impedir nomes/descrições duplicados (o controller verifica ID, mas não usa `existsByNome`; a constraint de nome único não foi confirmada).
 - [ ] Revisar o contrato de `funcionarios.nRs`: o DTO trafega nomes como strings, enquanto a relação persistida é FK para NR; decidir se o contrato atual é suficiente ou se deve passar IDs.
 - [ ] Revisar mensagens, validação, tratamento de erro, logs e UTF-8/acentuação.
-- [ ] Remover artefatos `target/` já versionados; `.gitignore` já os ignora, mas isso não remove arquivos rastreados.
+- [x] Remover artefatos `target/` do versionamento e manter a regra no `.gitignore`.
 - [ ] Conferir a reconciliação dos dados legados e os casos sem data/autor; não inventar informação faltante.
 - [ ] Revisar desempenho de consultas (funcionários/EPIs e históricos), índices e limites/paginação.
 
