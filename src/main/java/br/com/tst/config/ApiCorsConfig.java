@@ -16,6 +16,7 @@ public class ApiCorsConfig implements WebMvcConfigurer {
                         "https://projetointegradosenac2026.netlify.app",
                         "https://projetofullstack2026.vercel.app",
                         "https://projetofullstack2026-chi.vercel.app",
+                        "https://projetofullstack2026-ni7hxvnbs-viniciuscampbelletm20182-3124.vercel.app",
                         "https://projetofullstack2026-viniciuscampbelletm20182-3124.vercel.app",
                         "https://projetofullstack2026-git-main-viniciuscampbelletm20182-3124.vercel.app"
                 )

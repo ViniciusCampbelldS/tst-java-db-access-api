@@ -55,5 +55,24 @@ class AuthIntegrationTest {
  mvc.perform(patch("/funcionarios/"+f.getId()).header("Authorization","Bearer "+token).contentType("application/json").content("{\"permissoes\":\"ADM\"}")).andExpect(status().isForbidden());
  Assertions.assertEquals("rh",repository.findById(f.getId()).orElseThrow().getPermissoes());
  }
+ @Test void corsAllowsRequestedOriginsAndRejectsOthers() throws Exception {
+  for (String origin : java.util.List.of(
+      "https://projetofullstack2026-ni7hxvnbs-viniciuscampbelletm20182-3124.vercel.app",
+      "https://projetointegradosenac2026.netlify.app")) {
+   mvc.perform(options("/auth/login").header("Origin", origin)
+       .header("Access-Control-Request-Method", "POST")
+       .header("Access-Control-Request-Headers", "content-type"))
+       .andExpect(status().isOk())
+       .andExpect(header().string("Access-Control-Allow-Origin", origin))
+       .andExpect(header().string("Access-Control-Allow-Methods", org.hamcrest.Matchers.containsString("POST")));
+   mvc.perform(get("/auth/me").header("Origin", origin))
+       .andExpect(status().isUnauthorized())
+       .andExpect(header().string("Access-Control-Allow-Origin", origin));
+  }
+  mvc.perform(options("/auth/login").header("Origin", "https://example.com")
+      .header("Access-Control-Request-Method", "POST"))
+      .andExpect(status().isForbidden())
+      .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+ }
  @Test void tokenEntropyAndDigest(){String a=TokenService.token(),b=TokenService.token();Assertions.assertNotEquals(a,b);Assertions.assertEquals(64,TokenService.hash(a).length());}
 }
