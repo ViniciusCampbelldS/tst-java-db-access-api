@@ -81,6 +81,45 @@ class EventosHistoricoIntegrationTest {
     }
 
     @Test
+    void auditoriaDeFuncionarioRegistraCriacaoEAlteracoesSemCredenciais() throws Exception {
+        String adm = login("ADM", "10000000008");
+        var criado = Map.of("nome", "Pessoa teste", "cargo", "Operador", "cpf", "10000000009",
+                "setor", "Produção", "email", "pessoa@marmetalurgia.com", "permissoes", "field",
+                "status", "At", "nRs", List.of());
+        long id = json.readTree(mvc.perform(post("/funcionarios").header("Authorization", "Bearer " + adm)
+                .contentType("application/json").content(json.writeValueAsString(criado)))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString()).get("id").asLong();
+        mvc.perform(patch("/funcionarios/" + id).header("Authorization", "Bearer " + adm)
+                .contentType("application/json").content("{\"cargo\":\"Soldador\",\"setor\":\"Manutenção\"}"))
+                .andExpect(status().isOk());
+        var eventos = historico(adm, "FUNCIONARIO", id);
+        assertEquals("EDICAO", eventos.get(0).get("acao").asText());
+        assertEquals("Operador", eventos.get(0).get("antes").get("cargo").asText());
+        assertEquals("Soldador", eventos.get(0).get("depois").get("cargo").asText());
+        assertEquals("CRIACAO", eventos.get(1).get("acao").asText());
+        assertEquals("Pessoa teste", eventos.get(1).get("depois").get("nome").asText());
+        assertEquals(false, eventos.toString().contains("senhaHash"));
+        assertEquals(false, eventos.toString().contains("TokenHash"));
+    }
+
+    @Test
+    void funcionarioConsultaSomenteSeuHistorico() throws Exception {
+        String adm = login("ADM", "10000000010");
+        String funcionario = login("field", "10000000011");
+        long id = idDe("10000000011");
+        mvc.perform(patch("/funcionarios/" + id).header("Authorization", "Bearer " + adm)
+                .contentType("application/json").content("{\"cargo\":\"Soldador\"}"))
+                .andExpect(status().isOk());
+        var pessoal = json.readTree(mvc.perform(get("/portal/historico?registroId=" + idDe("10000000010"))
+                .header("Authorization", "Bearer " + funcionario)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString());
+        assertEquals(1, pessoal.get("total").asInt());
+        assertEquals("Soldador", pessoal.get("itens").get(0).get("depois").get("cargo").asText());
+        assertEquals(false, pessoal.toString().contains("comentarios"));
+        mvc.perform(get("/portal/historico")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void entregaSubstituicaoEDescarteSaoRegistradas() throws Exception {
         String tst = login("tst", "10000000001");
         long operario = idDe("10000000001");

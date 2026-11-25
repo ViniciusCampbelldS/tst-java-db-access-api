@@ -10,7 +10,17 @@ import java.util.*;
 @RestController @RequestMapping("/portal")
 public class PortalController {
  private static final String POSSE="WITH atuais AS (select i.epi_id,d.funcionario_id from entrega_epi_itens i join entregas_epi d on d.id=i.entrega_id where i.encerrado_em is null) ";
- private final JdbcTemplate jdbc;public PortalController(JdbcTemplate j){jdbc=j;}
+ private final JdbcTemplate jdbc;
+ private final br.com.tst.service.HistoricoService historico;
+ public PortalController(JdbcTemplate j, br.com.tst.service.HistoricoService historico){this.jdbc=j;this.historico=historico;}
+ public record EventoPessoal(java.time.Instant criadoEm, String acao, Object antes, Object depois) {}
+ public record PaginaPessoal(List<EventoPessoal> itens, long total, int pagina, int tamanho) {}
+ @GetMapping("/historico") public PaginaPessoal historico(Authentication a, @RequestParam(defaultValue="0") int pagina, @RequestParam(defaultValue="20") int tamanho) {
+  var resultado = historico.listar("FUNCIONARIO", Long.valueOf(a.getName()), null, null, null, pagina, tamanho);
+  var itens = resultado.itens().stream().map(e -> new EventoPessoal(e.criadoEm(), e.acao(), e.antes(), e.depois())).toList();
+  return new PaginaPessoal(itens, resultado.total(), resultado.pagina(), resultado.tamanho());
+ }
+
  @GetMapping("/epis") public List<Map<String,Object>> epis(Authentication a){return jdbc.queryForList(POSSE+"select e.id,e.ca,e.nome,e.vencimento,e.substituido,coalesce(d.dias_aviso,30) as \"diasAviso\" from epis e join atuais f on f.epi_id=e.id left join dias_notificacao_epis d on d.ca=e.ca where f.funcionario_id=?",Long.valueOf(a.getName()));}
  @GetMapping("/treinamentos") public List<Map<String,Object>> treinamentos(Authentication a){return jdbc.queryForList("select t.id,concat('NR-',lpad(cast(t.nr_id as varchar(10)),2,'0')) as nr,n.nome,t.data,p.vencimento,p.presente,coalesce(d.dias_aviso,30) as \"diasAviso\" from turmas_treinamento t join nrs n on n.id=t.nr_id join presencas_treinamento p on p.turma_id=t.id left join dias_notificacao_treinamentos d on d.nr=t.nr_id where p.funcionario_id=?",Long.valueOf(a.getName()));}
  public record Relato(@NotNull @Positive Long epiId,@NotBlank @Size(max=100) String situacao,@Size(max=4000)String comentario){}

@@ -83,9 +83,17 @@ public class FuncionarioService {
 
         if (funcionario.getEmail() != null) funcionario.setEmail(funcionario.getEmail().trim().toLowerCase(java.util.Locale.ROOT));
         funcionario.setNormas(funcionario.getnRs().stream().distinct().map(nome -> nrRepository.findByNome(nome).orElseThrow(() -> new IllegalArgumentException("NR não cadastrada: " + nome))).toList());
+        var dadosAnteriores = funcionario.getId() == null ? null : dadosPersistidos(funcionario.getId());
         var anterior = funcionario.getId() == null ? List.<String>of()
                 : jdbc.queryForList("select status from funcionarios where id=?", String.class, funcionario.getId());
         var salvo = funcionarioRepository.save(funcionario);
+        var dadosAtuais = dadosFuncionario(salvo);
+        if (dadosAnteriores == null) {
+            historico.registrar("FUNCIONARIO", salvo.getId(), "CRIACAO", null, dadosAtuais);
+        } else {
+            historico.registrar("FUNCIONARIO", salvo.getId(), "EDICAO", dadosAnteriores, dadosAtuais);
+        }
+
         if (!anterior.isEmpty() && !anterior.getFirst().equals(salvo.getStatus())) {
             boolean retorno = "At".equals(salvo.getStatus());
             var depois = new java.util.LinkedHashMap<String, Object>();
@@ -95,6 +103,32 @@ public class FuncionarioService {
                     java.util.Map.of("status", anterior.getFirst()), depois);
         }
         return salvo;
+    }
+
+    private java.util.Map<String, Object> dadosFuncionario(Funcionario funcionario) {
+        var dados = new java.util.LinkedHashMap<String, Object>();
+        dados.put("nome", funcionario.getNome());
+        dados.put("cpf", funcionario.getCpf());
+        dados.put("email", funcionario.getEmail());
+        dados.put("cargo", funcionario.getCargo());
+        dados.put("setor", funcionario.getSetor());
+        dados.put("permissoes", funcionario.getPermissoes());
+        dados.put("nRs", funcionario.getnRs().stream().sorted().toList());
+        return dados;
+    }
+
+    private java.util.Map<String, Object> dadosPersistidos(Long id) {
+        var linhas = jdbc.queryForList("select nome, cpf, email, cargo, setor, permissoes from funcionarios where id=?", id);
+        if (linhas.isEmpty()) throw new RegistroNaoEncontradoException("Funcionário não encontrado.");
+        var origem = linhas.getFirst();
+        var dados = new java.util.LinkedHashMap<String, Object>();
+        for (var campo : List.of("nome", "cpf", "email", "cargo", "setor", "permissoes")) {
+            dados.put(campo, origem.get(campo));
+        }
+        dados.put("nRs", jdbc.queryForList(
+                "select n.nome from funcionarios_nrs fn join nrs n on n.id=fn.nr_id where fn.funcionario_id=?",
+                String.class, id).stream().sorted().toList());
+        return dados;
     }
 
     /**
