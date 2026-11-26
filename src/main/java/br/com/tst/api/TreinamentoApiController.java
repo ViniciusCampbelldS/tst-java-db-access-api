@@ -88,7 +88,7 @@ public class TreinamentoApiController {
 
     @GetMapping("/turmas")
     public List<Map<String,Object>> turmas() {
-        return jdbc.queryForList("select t.id,t.nr_id as \"nrId\",n.validade_meses as \"validadeMeses\",n.nome as \"nrNome\",t.data,t.horario,t.documento_nome as \"documentoNome\",p.funcionario_id as \"funcionarioId\",f.nome as funcionario,p.presente from turmas_treinamento t join nrs n on n.id=t.nr_id join presencas_treinamento p on p.turma_id=t.id join funcionarios f on f.id=p.funcionario_id order by t.data desc,t.id desc");
+        return jdbc.queryForList("select t.id,t.nr_id as \"nrId\",n.validade_meses as \"validadeMeses\",n.nome as \"nrNome\",t.data,t.horario,t.documento_nome as \"documentoNome\",p.funcionario_id as \"funcionarioId\",f.nome as funcionario,p.presente,p.vencimento from turmas_treinamento t join nrs n on n.id=t.nr_id join presencas_treinamento p on p.turma_id=t.id join funcionarios f on f.id=p.funcionario_id order by t.data desc,t.id desc");
     }
 
     @PostMapping("/turmas")
