@@ -26,6 +26,7 @@ public class TreinamentoApiController {
 
     public record TurmaRequest(@NotNull @Positive Long nrId, @NotNull LocalDate data,
                                @NotNull LocalTime horario, @NotEmpty @Size(max = 100) List<@Positive Long> funcionarioIds) {}
+    public record EditarTurmaRequest(@NotNull @Positive Long nrId, @NotNull LocalDate data, @NotNull LocalTime horario) {}
     public record PresencaRequest(@NotNull Boolean presente) {}
     private static Map<String,Object> documentoSnap(String nome, String tipo, int tamanho) {
         var m = new java.util.LinkedHashMap<String,Object>();
@@ -111,6 +112,7 @@ public class TreinamentoApiController {
     @PatchMapping("/turmas/{turmaId}/participantes/{funcionarioId}")
     @org.springframework.transaction.annotation.Transactional
     public void presenca(@PathVariable long turmaId,@PathVariable long funcionarioId,@Valid @RequestBody PresencaRequest request,Authentication sessao) {
+        if (jdbc.queryForList("select id from turmas_treinamento where id=? for update", turmaId).isEmpty()) throw new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND);
         var estadoSql="select presente,concluido_em,vencimento from presencas_treinamento where turma_id=? and funcionario_id=?";
         var antes=jdbc.queryForList(estadoSql+" for update",turmaId,funcionarioId);
         if(antes.isEmpty()) throw new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -121,5 +123,22 @@ public class TreinamentoApiController {
             where turma_id=? and funcionario_id=?
             """,request.presente(),request.presente(),request.presente(),turmaId,turmaId,funcionarioId);
         historico.registrar("TURMA", turmaId, "PRESENCA", presencaSnap(antes.getFirst(), funcionarioId), presencaSnap(jdbc.queryForMap(estadoSql,turmaId,funcionarioId), funcionarioId));
+    }
+
+    @PutMapping("/turmas/{turmaId}")
+    @org.springframework.transaction.annotation.Transactional
+    public Map<String, Object> editarTurma(@PathVariable long turmaId, @Valid @RequestBody EditarTurmaRequest request) {
+        var turmas = jdbc.queryForList("select nr_id,data,horario from turmas_treinamento where id=? for update", turmaId);
+        if (turmas.isEmpty()) throw new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada.");
+        if (jdbc.queryForObject("select count(*) from presencas_treinamento where turma_id=? and presente=true", Integer.class, turmaId) > 0) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.CONFLICT, "Uma turma com presença registrada não pode ser editada.");
+        }
+        if (jdbc.queryForObject("select count(*) from nrs where id=?", Integer.class, request.nrId()) == 0) throw new IllegalArgumentException("NR não cadastrada.");
+        var original = turmas.getFirst();
+        var antes = Map.of("nrId", ((Number) original.get("nr_id")).longValue(), "data", original.get("data").toString(), "horario", LocalTime.parse(original.get("horario").toString()).toString());
+        var depois = Map.of("nrId", request.nrId(), "data", request.data().toString(), "horario", request.horario().toString());
+        jdbc.update("update turmas_treinamento set nr_id=?,data=?,horario=? where id=?", request.nrId(), request.data(), request.horario(), turmaId);
+        historico.registrar("TURMA", turmaId, "EDICAO", antes, depois);
+        return Map.of("id", turmaId, "nrId", request.nrId(), "data", request.data(), "horario", request.horario());
     }
 }

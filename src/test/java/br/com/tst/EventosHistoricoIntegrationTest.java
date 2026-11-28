@@ -167,12 +167,20 @@ class EventosHistoricoIntegrationTest {
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString()).get("id").asLong();
         assertEquals("CRIACAO", historico(adm, "TURMA", turma).get(0).get("acao").asText());
 
+        mvc.perform(put("/treinamentos/turmas/" + turma).header("Authorization", "Bearer " + adm)
+                .contentType("application/json").content("{\"nrId\":777,\"data\":\"2026-09-02\",\"horario\":\"09:00:00\"}"))
+                .andExpect(status().isOk());
+        assertEquals("EDICAO", historico(adm, "TURMA", turma).get(0).get("acao").asText());
+
         mvc.perform(patch("/treinamentos/turmas/" + turma + "/participantes/" + aluno).header("Authorization", "Bearer " + adm)
                 .contentType("application/json").content("{\"presente\":true}")).andExpect(status().isOk());
         var presenca = historico(adm, "TURMA", turma).get(0);
         assertEquals("PRESENCA", presenca.get("acao").asText());
         assertEquals(aluno, presenca.get("depois").get("funcionarioId").asLong());
         assertEquals(true, presenca.get("depois").get("presente").asBoolean());
+        mvc.perform(put("/treinamentos/turmas/" + turma).header("Authorization", "Bearer " + adm)
+                .contentType("application/json").content("{\"nrId\":777,\"data\":\"2026-09-03\",\"horario\":\"09:00:00\"}"))
+                .andExpect(status().isConflict());
 
         var pdf = new MockMultipartFile("arquivo", "lista.pdf", "application/pdf", "%PDF-1.4 exemplo".getBytes());
         mvc.perform(multipart("/treinamentos/turmas/" + turma + "/documento").file(pdf).with(r -> { r.setMethod("PUT"); return r; })
